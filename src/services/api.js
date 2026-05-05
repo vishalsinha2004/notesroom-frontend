@@ -20,6 +20,10 @@ api.interceptors.request.use((config) => {
 // Authentication endpoints
 export const authAPI = {
     login: (username, password) => api.post('/token/', { username, password }),
+    
+    // NEW ENDPOINTS
+    register: (userData) => api.post('/register/', userData),
+    verify: (email, code) => api.post('/verify-email/', { email, code }),
 };
 
 // Document endpoints

@@ -20,7 +20,6 @@ export default function UploadForm({ onUploadSuccess }) {
     setIsUploading(true);
     setError('');
 
-    // When sending files, we MUST use FormData instead of standard JSON
     const formData = new FormData();
     formData.append('title', title);
     formData.append('semester', semester);
@@ -29,12 +28,10 @@ export default function UploadForm({ onUploadSuccess }) {
 
     try {
       await documentAPI.upload(formData);
-      // Clear the form
       setTitle('');
       setSemester('');
       setSubject('');
       setFile(null);
-      // Tell the parent component to refresh the list
       onUploadSuccess(); 
     } catch (err) {
       console.error("Upload failed:", err);
@@ -45,17 +42,19 @@ export default function UploadForm({ onUploadSuccess }) {
   };
 
   return (
-    <div style={{ background: '#f5f5f5', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
-      <h3>Upload New Document</h3>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+      <h3 className="text-lg font-bold text-gray-900 mb-4">Upload New Document</h3>
       
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px' }}>
+      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+      
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input 
           type="text" 
           placeholder="Document Title (e.g., Assignment 3)" 
           value={title} 
           onChange={(e) => setTitle(e.target.value)} 
           required 
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
         />
         <input 
           type="text" 
@@ -63,6 +62,7 @@ export default function UploadForm({ onUploadSuccess }) {
           value={semester} 
           onChange={(e) => setSemester(e.target.value)} 
           required 
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
         />
         <input 
           type="text" 
@@ -70,14 +70,20 @@ export default function UploadForm({ onUploadSuccess }) {
           value={subject} 
           onChange={(e) => setSubject(e.target.value)} 
           required 
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
         />
         <input 
           type="file" 
-          accept=".pdf" // Restrict to PDFs for now
+          accept=".pdf" 
           onChange={(e) => setFile(e.target.files[0])} 
           required 
+          className="px-4 py-2 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
         />
-        <button type="submit" disabled={isUploading}>
+        <button 
+          type="submit" 
+          disabled={isUploading}
+          className="md:col-span-2 w-full py-3 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        >
           {isUploading ? 'Uploading to Supabase...' : 'Upload File'}
         </button>
       </form>
