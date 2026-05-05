@@ -3,14 +3,31 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+// Create a custom axios instance
+const api = axios.create({
+    baseURL: API_URL,
+});
+
+// Interceptor: Automatically attach the token if we have one
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
+// Authentication endpoints
+export const authAPI = {
+    login: (username, password) => api.post('/token/', { username, password }),
+};
+
+// Document endpoints
 export const documentAPI = {
-    // Get all documents
-    getAll: () => axios.get(`${API_URL}/documents/`),
+    getAll: () => api.get('/documents/'),
     
-    // Upload a new document
-    upload: (formData) => axios.post(`${API_URL}/documents/`, formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
+    upload: (formData) => api.post('/documents/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
     }),
+    delete: (id) => api.delete(`/documents/${id}/`),
 };
