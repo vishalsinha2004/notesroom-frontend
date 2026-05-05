@@ -2,9 +2,11 @@
 import { useState, useEffect } from 'react';
 import { documentAPI } from '../services/api';
 import UploadForm from './UploadForm';
+import ChatModal from './ChatModal'; // 1. Import the ChatModal
 
 export default function Dashboard({ setIsLoggedIn }) {
   const [documents, setDocuments] = useState([]);
+  const [activeChatDoc, setActiveChatDoc] = useState(null); // 2. State to track which PDF is open in chat
 
   const fetchDocuments = () => {
     documentAPI.getAll()
@@ -69,21 +71,30 @@ export default function Dashboard({ setIsLoggedIn }) {
                 </div>
               </div>
               
-              <div className="mt-4 flex space-x-3 pt-4 border-t border-gray-100">
-                <a 
-                  href={doc.file} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="flex-1 bg-blue-50 text-blue-700 text-center py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors"
-                >
-                  View PDF
-                </a>
+              {/* 3. UPDATED BUTTON ROW WITH AI INTEGRATION */}
+              <div className="mt-4 flex flex-col space-y-2 pt-4 border-t border-gray-100">
                 <button 
-                  onClick={() => handleDelete(doc.id)} 
-                  className="flex-none bg-red-50 text-red-700 py-2 px-4 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors"
+                  onClick={() => setActiveChatDoc(doc)}
+                  className="w-full bg-purple-100 text-purple-700 py-2 px-4 rounded-lg text-sm font-bold hover:bg-purple-200 transition-colors flex justify-center items-center gap-2"
                 >
-                  Delete
+                  ✨ Ask AI (Llama 3.1)
                 </button>
+                <div className="flex space-x-2">
+                  <a 
+                    href={doc.file} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex-1 bg-blue-50 text-blue-700 text-center py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors"
+                  >
+                    View PDF
+                  </a>
+                  <button 
+                    onClick={() => handleDelete(doc.id)} 
+                    className="flex-none bg-red-50 text-red-700 py-2 px-4 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -95,6 +106,11 @@ export default function Dashboard({ setIsLoggedIn }) {
           </div>
         )}
       </main>
+
+      {/* 4. RENDER THE CHAT MODAL WHEN ACTIVE */}
+      {activeChatDoc && (
+        <ChatModal document={activeChatDoc} onClose={() => setActiveChatDoc(null)} />
+      )}
     </div>
   );
 }

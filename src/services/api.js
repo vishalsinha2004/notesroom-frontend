@@ -29,9 +29,11 @@ export const authAPI = {
 // Document endpoints
 export const documentAPI = {
     getAll: () => api.get('/documents/'),
-    
     upload: (formData) => api.post('/documents/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
     }),
     delete: (id) => api.delete(`/documents/${id}/`),
+    
+    // NEW: AI Chat Endpoint
+    chat: (id, message) => api.post(`/documents/${id}/chat/`, { message }),
 };
