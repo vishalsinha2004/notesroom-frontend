@@ -23,7 +23,9 @@ export const authAPI = {
     
     // NEW ENDPOINTS
     register: (userData) => api.post('/register/', userData),
-    verify: (email, code) => api.post('/verify-email/', { email, code }),
+    
+    // UPDATED: Mapped to match the Django backend expecting '{ email, otp }'
+    verify: (email, code) => api.post('/verify-otp/', { email, otp: code }),
 };
 
 // Document endpoints
@@ -34,6 +36,6 @@ export const documentAPI = {
     }),
     delete: (id) => api.delete(`/documents/${id}/`),
     
-    // NEW: AI Chat Endpoint
+    // AI Chat Endpoint
     chat: (id, message) => api.post(`/documents/${id}/chat/`, { message }),
 };
