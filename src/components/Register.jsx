@@ -4,23 +4,58 @@ import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../services/api';
 
 export default function Register() {
-  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ 
+    username: '', 
+    email: '', 
+    password: '', 
+    confirmPassword: '' 
+  });
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Custom function to validate password strength
+  const validatePassword = (password) => {
+    if (password.length < 8) return "Password must be at least 8 characters long.";
+    if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter.";
+    if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter.";
+    if (!/[0-9]/.test(password)) return "Password must contain at least one number.";
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) return "Password must contain at least one special character.";
+    return null; // Null means it passed all checks
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // 1. Check password strength first
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      setStatus({ type: 'error', message: passwordError });
+      return;
+    }
+
+    // 2. Validate that passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setStatus({ type: 'error', message: 'Passwords do not match.' });
+      return;
+    }
+
     setIsLoading(true);
     setStatus({ type: '', message: '' });
 
     try {
-      await authAPI.register(formData);
+      const submitData = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password
+      };
+
+      await authAPI.register(submitData);
       navigate('/verify', { state: { email: formData.email } });
     } catch (err) {
       setStatus({ 
         type: 'error', 
-        message: err.response?.data?.error || 'Registration failed.' 
+        message: err.response?.data?.error || 'Registration failed. Username or email might already be taken.' 
       });
       setIsLoading(false); 
     } 
@@ -62,15 +97,31 @@ export default function Register() {
               required 
               className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
+            
+            <div>
+              <input 
+                type="password" 
+                placeholder="Password" 
+                value={formData.password} 
+                onChange={(e) => setFormData({...formData, password: e.target.value})} 
+                required 
+                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+              <p className="mt-1 text-xs text-gray-500 pl-1">
+                Must be 8+ chars with uppercase, lowercase, number, and special character.
+              </p>
+            </div>
+
             <input 
               type="password" 
-              placeholder="Password" 
-              value={formData.password} 
-              onChange={(e) => setFormData({...formData, password: e.target.value})} 
+              placeholder="Confirm Password" 
+              value={formData.confirmPassword} 
+              onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})} 
               required 
               className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
+          
           <button 
             type="submit" 
             disabled={isLoading}

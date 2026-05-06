@@ -23,8 +23,11 @@ export default function VerifyEmail() {
 
     try {
       await authAPI.verify(email, code);
-      alert('Verification successful! You can now log in.');
-      navigate('/login');
+      alert('Verification successful!');
+      
+      // FIX: Changed from '/login' to '/' to redirect to the home page
+      navigate('/'); 
+      
     } catch (err) {
       setError(err.response?.data?.error || 'Verification failed. Please check your code.');
     } finally {
