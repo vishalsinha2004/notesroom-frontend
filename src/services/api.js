@@ -20,22 +20,15 @@ api.interceptors.request.use((config) => {
 // Authentication endpoints
 export const authAPI = {
     login: (username, password) => api.post('/token/', { username, password }),
-    
-    // NEW ENDPOINTS
     register: (userData) => api.post('/register/', userData),
-    
-    // UPDATED: Mapped to match the Django backend expecting '{ email, otp }'
     verify: (email, code) => api.post('/verify-otp/', { email, otp: code }),
 };
 
 // Document endpoints
 export const documentAPI = {
-    getAll: () => api.get('/documents/'),
-    upload: (formData) => api.post('/documents/', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-    }),
-    delete: (id) => api.delete(`/documents/${id}/`),
+    // 1. Fetch the nested Semesters > Subjects > Documents structure
+    getAllSemesters: () => api.get('/semesters/'),
     
-    // AI Chat Endpoint
+    // 2. AI Chat Endpoint
     chat: (id, message) => api.post(`/documents/${id}/chat/`, { message }),
 };
