@@ -1,5 +1,5 @@
 // src/components/VerifyEmail.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 
@@ -8,9 +8,21 @@ export default function VerifyEmail() {
   const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   
+  // Timer States
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [isResending, setIsResending] = useState(false);
+  
   const location = useLocation();
   const navigate = useNavigate();
   const email = location.state?.email;
+
+  // Countdown Timer Logic
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const timerId = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timerId);
+    }
+  }, [timeLeft]);
 
   if (!email) {
     return <Navigate to="/login" />;
@@ -24,15 +36,37 @@ export default function VerifyEmail() {
     try {
       await authAPI.verify(email, code);
       alert('Verification successful!');
-      
-      // FIX: Changed from '/login' to '/' to redirect to the home page
       navigate('/'); 
-      
     } catch (err) {
       setError(err.response?.data?.error || 'Verification failed. Please check your code.');
     } finally {
       setIsVerifying(false);
     }
+  };
+
+  const handleResend = async () => {
+    setIsResending(true);
+    setError('');
+    
+    try {
+      // Call the API to resend the code
+      await authAPI.resendOtp(email);
+      
+      // Reset the timer back to 60 seconds
+      setTimeLeft(60);
+      alert('A new verification code has been sent to your email.');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to resend code. Please try again.');
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  // Format time as MM:SS
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
   return (
@@ -63,12 +97,30 @@ export default function VerifyEmail() {
           />
           <button 
             type="submit" 
-            disabled={isVerifying} 
+            disabled={isVerifying || code.length < 6} 
             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
           >
             {isVerifying ? 'Verifying...' : 'Verify Code'}
           </button>
         </form>
+
+        {/* Timer and Resend Button UI */}
+        <div className="mt-6">
+          {timeLeft > 0 ? (
+            <p className="text-sm text-gray-500">
+              Resend code in <span className="font-semibold text-gray-700">{formatTime(timeLeft)}</span>
+            </p>
+          ) : (
+            <button 
+              onClick={handleResend}
+              disabled={isResending}
+              className="text-sm font-medium text-blue-600 hover:text-blue-500 disabled:opacity-50 transition-colors"
+            >
+              {isResending ? 'Sending...' : "Didn't receive the code? Resend"}
+            </button>
+          )}
+        </div>
+
       </div>
     </div>
   );
