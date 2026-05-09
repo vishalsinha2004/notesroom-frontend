@@ -1,1 +1,17 @@
+/* 1. Import Tailwind v4 */
 @import "tailwindcss";
+
+/* 2. Enable "Class-based" Dark Mode for v4 */
+@custom-variant dark (&:is(.dark *));
+
+/* 3. Set Syne as your default font */
+@theme {
+  --font-sans: 'Syne', sans-serif;
+}
+
+/* 4. Apply the font globally */
+@layer base {
+  html, body {
+    font-family: var(--font-sans);
+  }
+}
