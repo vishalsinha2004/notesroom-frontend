@@ -2,25 +2,36 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// Import your separated components
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Register from './components/Register';
 import VerifyEmail from './components/VerifyEmail';
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('access_token'));
+  const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('access_token'));
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* Protected Dashboard Route */}
-        <Route path="/" element={ isLoggedIn ? <Dashboard setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/login" /> } />
+        {/* PUBLIC HOME PAGE: Everyone can see the Dashboard now */}
+        <Route 
+          path="/" 
+          element={<Dashboard isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} 
+        />
         
-        {/* Public Routes */}
-        <Route path="/login" element={ !isLoggedIn ? <Login setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" /> } />
-        <Route path="/register" element={ !isLoggedIn ? <Register /> : <Navigate to="/" /> } />
+        {/* Auth Routes: Redirect to home if already logged in */}
+        <Route 
+          path="/login" 
+          element={!isLoggedIn ? <Login setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/" replace />} 
+        />
+        <Route 
+          path="/register" 
+          element={!isLoggedIn ? <Register /> : <Navigate to="/" replace />} 
+        />
         <Route path="/verify" element={<VerifyEmail />} />
+        
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
