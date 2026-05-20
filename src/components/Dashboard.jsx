@@ -5,6 +5,7 @@ import { documentAPI } from '../services/api';
 import ChatModal from './ChatModal';
 import PdfModal from './PdfModal';
 import ThemeToggle from './ThemeToggle';
+import FloatingChatbot from './FloatingChatbot';
 
 // Accept isLoggedIn as a prop from App.jsx
 export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
@@ -325,6 +326,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
       {/* Modals */}
       {activeChatDoc && <ChatModal document={activeChatDoc} onClose={() => setActiveChatDoc(null)} />}
       {activePdfDoc && <PdfModal document={activePdfDoc} onClose={() => setActivePdfDoc(null)} />}
+        {isLoggedIn && <FloatingChatbot />}
     </div>
   );
 }

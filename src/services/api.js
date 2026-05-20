@@ -32,4 +32,6 @@ export const documentAPI = {
     
     // 2. AI Chat Endpoint
     chat: (id, message) => api.post(`/documents/${id}/chat/`, { message }),
+
+    generalChat: (message) => api.post('/chat/', { message }),
 };
