@@ -1,36 +1,30 @@
 // src/components/Dashboard.jsx
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // IMPORT NAVIGATE
+import { useNavigate } from 'react-router-dom'; 
 import { documentAPI } from '../services/api';
 import ChatModal from './ChatModal';
 import PdfModal from './PdfModal';
-import ThemeToggle from './ThemeToggle';
 import FloatingChatbot from './FloatingChatbot';
+import ThemeToggle from './ThemeToggle'; 
 
-// Accept isLoggedIn as a prop from App.jsx
 export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
-  const navigate = useNavigate(); // Initialize navigation
+  const navigate = useNavigate(); 
 
   const [semesters, setSemesters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Modal States
   const [activeChatDoc, setActiveChatDoc] = useState(null);
   const [activePdfDoc, setActivePdfDoc] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
 
-  // Navigation State
   const [currentView, setCurrentView] = useState('semesters');
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
 
-  // REDIRECT FLOW: This function protects document clicks
   const handleProtectedAction = (action) => {
     if (!isLoggedIn) {
-      // If user is not logged in, send them to login page
       navigate('/login');
     } else {
-      // If logged in, execute the action (view, chat, etc.)
       action();
     }
   };
@@ -93,50 +87,53 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
   };
 
   const FolderSkeleton = () => (
-    <div className="bg-white dark:bg-gray-800/80 p-8 rounded-3xl border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center w-full animate-pulse backdrop-blur-sm">
-      <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-5"></div>
-      <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-lg w-2/3 mb-4"></div>
-      <div className="h-6 bg-gray-100 dark:bg-gray-700/50 rounded-full w-1/2"></div>
+    <div className="bg-white dark:bg-[#1e1f20] p-4 rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 flex items-center gap-4 w-full animate-pulse">
+      <div className="w-12 h-12 bg-gray-200 dark:bg-[#303134] rounded-xl shrink-0"></div>
+      <div className="flex-1 space-y-2">
+        <div className="h-4 bg-gray-200 dark:bg-[#303134] rounded-md w-3/4"></div>
+        <div className="h-3 bg-gray-100 dark:bg-[#303134]/60 rounded-md w-1/4"></div>
+      </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 font-sans relative">
+    <div className="min-h-screen bg-[#f0f4f9] dark:bg-[#131314] text-gray-900 dark:text-[#e3e3e3] transition-colors duration-300 font-sans relative pb-20 md:pb-8">
 
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-6 py-3 rounded-xl shadow-2xl z-50 animate-slide-in-up font-bold flex items-center gap-2">
+        <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 bg-gray-900 dark:bg-[#e3e3e3] text-white dark:text-gray-900 px-4 py-2.5 rounded-full shadow-lg z-50 animate-slide-in-up text-sm font-medium flex items-center gap-2">
           <span>✅</span> {toastMessage}
         </div>
       )}
 
-      {/* NAVBAR */}
-      <nav className="sticky top-0 z-40 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                <span className="font-bold text-xl">N</span>
+      {/* NAVBAR - Max width set to keep it centered on giant monitors */}
+      <nav className="sticky top-0 z-40 bg-[#f0f4f9]/80 dark:bg-[#131314]/80 backdrop-blur-xl border-b border-transparent dark:border-gray-800/30">
+        <div className="max-w-6xl mx-auto px-4 lg:px-8">
+          <div className="flex justify-between h-14 items-center">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-sm">
+                <span className="font-bold text-sm">N</span>
               </div>
-              <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hidden sm:block">
+              <h1 className="text-lg font-semibold tracking-tight hidden sm:block">
                 Notesroom
               </h1>
             </div>
 
-            <div className="flex items-center space-x-3 sm:space-x-5">
-              <ThemeToggle />
-
-              {/* DYNAMIC BUTTON: Show Log Out if logged in, Log In if guest */}
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="hidden sm:block scale-90">
+                <ThemeToggle />
+              </div>
               {isLoggedIn ? (
                 <button
-                  onClick={handleLogout}
-                  className="text-sm font-bold text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 px-4 py-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 transition-all duration-200"
+                  onClick={() => navigate('/profile')}
+                  className="hidden sm:flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold hover:scale-105 transition-transform"
+                  title="Profile"
                 >
-                  Log Out
+                  VS
                 </button>
               ) : (
                 <button
                   onClick={() => navigate('/login')}
-                  className="text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-xl shadow-md shadow-blue-500/20 transition-all duration-200"
+                  className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-full transition-colors"
                 >
                   Log In
                 </button>
@@ -146,44 +143,34 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
         </div>
       </nav>
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* NEW: GUEST WELCOME MESSAGE BANNER */}
+      {/* MAIN CONTENT - Max width capped at 6xl to prevent insane stretching */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 animate-fade-in">
+        
+        {/* SLIM GUEST BANNER */}
         {!isLoggedIn && (
-          <div className="mb-10 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-100 dark:border-blue-800/50 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="text-4xl animate-bounce">👋</div>
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">
-                  Log in to unlock your notes!
-                </h2>
-                <p className="text-gray-600 dark:text-gray-300 font-medium">
-                  Happy learning! Sign in to view, download, and ask AI about your documents. 😊
-                </p>
-              </div>
+          <div className="mb-6 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+            <div className="text-2xl shrink-0">👋</div>
+            <div>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-[#e3e3e3]">Log in to unlock features</h2>
+              <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-0.5">View, download, and ask AI about documents.</p>
             </div>
-            {/* <button
-              onClick={() => navigate('/login')}
-              className="whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-md shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1"
-            >
-              Log In Now
-            </button> */}
           </div>
         )}
-        {/* BREADCRUMBS */}
-        <div className="inline-flex flex-wrap items-center gap-2 mb-10 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md p-2 rounded-2xl shadow-sm border border-gray-200/50 dark:border-gray-700/50">
+
+        {/* SLIM BREADCRUMBS */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-6 text-sm">
           <button
             onClick={() => setCurrentView('semesters')}
-            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${currentView === 'semesters' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+            className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${currentView === 'semesters' ? 'bg-[#e3e3e3] dark:bg-[#303134] text-gray-900 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-[#1e1f20]'}`}
           >
             All Semesters
           </button>
           {selectedSemester && currentView !== 'semesters' && (
             <>
-              <span className="text-gray-300 dark:text-gray-600">❯</span>
+              <span className="text-gray-400 dark:text-gray-600 text-[10px]">❯</span>
               <button
                 onClick={() => setCurrentView('subjects')}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${currentView === 'subjects' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${currentView === 'subjects' ? 'bg-[#e3e3e3] dark:bg-[#303134] text-gray-900 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-[#1e1f20]'}`}
               >
                 {selectedSemester.name}
               </button>
@@ -191,8 +178,8 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
           )}
           {selectedSubject && currentView === 'documents' && (
             <>
-              <span className="text-gray-300 dark:text-gray-600">❯</span>
-              <span className="px-4 py-2 rounded-xl text-sm font-bold bg-purple-600 text-white shadow-md shadow-purple-500/20">
+              <span className="text-gray-400 dark:text-gray-600 text-[10px]">❯</span>
+              <span className="px-3 py-1.5 rounded-lg font-medium bg-[#e3e3e3] dark:bg-[#303134] text-gray-900 dark:text-white">
                 {selectedSubject.name}
               </span>
             </>
@@ -200,118 +187,108 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          // Fixed Skeleton Grid
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {[...Array(8)].map((_, i) => <FolderSkeleton key={i} />)}
           </div>
         ) : (
           <>
-            {/* VIEW 1: SEMESTERS GRID */}
+            {/* VIEW 1: SEMESTERS */}
             {currentView === 'semesters' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              // Use responsive grid to prevent stretching
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {semesters.map(sem => (
                   <div
                     key={sem.id}
-                    // CORRECTED: Use 'sem' and 'subjects' instead of 'sub' and 'documents'
                     onClick={() => handleProtectedAction(() => {
                       setSelectedSemester(sem);
                       setCurrentView('subjects');
                     })}
-                    className="group relative bg-white dark:bg-gray-800/80 p-8 rounded-3xl border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-2 cursor-pointer overflow-hidden backdrop-blur-sm"
+                    className="group bg-white dark:bg-[#1e1f20] p-4 rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 hover:bg-gray-50 dark:hover:bg-[#303134]/40 transition-colors cursor-pointer flex items-center justify-between"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent dark:from-blue-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative z-10 flex flex-col items-center text-center">
-                      <div className="w-20 h-20 flex items-center justify-center bg-blue-50 dark:bg-gray-700/50 rounded-2xl group-hover:scale-110 transition-transform duration-300 ease-out mb-5">
-                        <span className="text-4xl">📁</span>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 flex shrink-0 items-center justify-center bg-blue-50 dark:bg-[#303134] rounded-xl text-xl">📁</div>
+                      <div>
+                        <h3 className="font-medium text-gray-900 dark:text-[#e3e3e3]">{sem.name}</h3>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{sem.subjects.length} Subjects</p>
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{sem.name}</h3>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-full">
-                        {sem.subjects.length} Subjects
-                      </span>
                     </div>
+                    <svg className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* VIEW 2: SUBJECTS GRID */}
+            {/* VIEW 2: SUBJECTS */}
             {currentView === 'subjects' && selectedSemester && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              // Use responsive grid to prevent stretching
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {selectedSemester.subjects.map(sub => (
                   <div
                     key={sub.id}
-                    // CORRECTED: Wrap the subjects click as well
                     onClick={() => handleProtectedAction(() => {
                       setSelectedSubject(sub);
                       setCurrentView('documents');
                     })}
-                    className="group relative bg-white dark:bg-gray-800/80 p-8 rounded-3xl border border-gray-100 dark:border-gray-700/50 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 hover:-translate-y-2 cursor-pointer overflow-hidden backdrop-blur-sm"
+                    className="group bg-white dark:bg-[#1e1f20] p-4 rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 hover:bg-gray-50 dark:hover:bg-[#303134]/40 transition-colors cursor-pointer flex items-center justify-between"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-transparent dark:from-indigo-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative z-10 flex flex-col items-center text-center">
-                      <div className="w-20 h-20 flex items-center justify-center bg-indigo-50 dark:bg-gray-700/50 rounded-2xl group-hover:scale-110 transition-transform duration-300 ease-out mb-5">
-                        <span className="text-4xl">📚</span>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 flex shrink-0 items-center justify-center bg-indigo-50 dark:bg-[#303134] rounded-xl text-xl">📚</div>
+                      <div>
+                        <h3 className="font-medium text-gray-900 dark:text-[#e3e3e3]">{sub.name}</h3>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{sub.documents.length} Documents</p>
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{sub.name}</h3>
-                      <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-full">
-                        {sub.documents.length} Documents
-                      </span>
                     </div>
+                    <svg className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* VIEW 3: DOCUMENTS GRID */}
+            {/* VIEW 3: DOCUMENTS */}
             {currentView === 'documents' && selectedSubject && (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              // Adjusted columns: 1 on mobile, 2 on tablet, 3 on desktop, 4 on ultra-wide
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {selectedSubject.documents.map(doc => (
-                  <div key={doc.id} className="group relative flex flex-col bg-white dark:bg-gray-800/80 rounded-3xl shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-700/50 p-6 transition-all duration-300 hover:border-blue-200 dark:hover:border-blue-800/50 backdrop-blur-sm overflow-hidden">
+                  <div key={doc.id} className="bg-white dark:bg-[#1e1f20] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 p-4 flex flex-col gap-4 min-h-[160px]">
 
-                    {/* Ask AI - Uses handleProtectedAction */}
-                    <div className="absolute top-4 right-4 z-10">
-                      <button
-                        onClick={() => handleProtectedAction(() => setActiveChatDoc(doc))}
-                        className="relative group/ai p-[2px] rounded-full overflow-hidden shadow-sm hover:shadow-purple-500/30 transition-all duration-300 hover:-translate-y-0.5"
-                      >
-                        <span className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 rounded-full opacity-80 group-hover/ai:opacity-100 transition-opacity duration-300"></span>
-                        <div className="relative bg-white dark:bg-gray-900 px-3 py-1.5 rounded-[999px] flex items-center gap-1.5 hover:bg-transparent dark:hover:bg-transparent transition-colors duration-300">
-                          <span className="text-sm group-hover/ai:animate-bounce text-white">✨</span>
-                          <span className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 group-hover/ai:text-white transition-colors duration-300 whitespace-nowrap">Ask AI</span>
-                        </div>
-                      </button>
-                    </div>
-
-                    <div className="flex items-start gap-4 mb-6 mt-1 pr-28">
-                      <div className="p-3.5 bg-blue-50 dark:bg-blue-900/20 rounded-2xl text-2xl group-hover:scale-110 transition-transform duration-300 flex-shrink-0">📄</div>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{doc.title}</h3>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5 font-medium">Added {new Date(doc.uploaded_at).toLocaleDateString()}</p>
+                    {/* Doc Info */}
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-gray-100 dark:bg-[#303134] rounded-xl text-xl flex shrink-0 items-center justify-center">📄</div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-medium text-gray-900 dark:text-[#e3e3e3] leading-snug line-clamp-2">{doc.title}</h3>
+                        <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-1">Added {new Date(doc.uploaded_at).toLocaleDateString()}</p>
                       </div>
                     </div>
 
-                    <div className="mt-auto space-y-2">
-                      {/* View Button - Uses handleProtectedAction */}
+                    {/* Action Row */}
+                    <div className="flex gap-2 mt-auto">
                       <button
                         onClick={() => handleProtectedAction(() => setActivePdfDoc(doc))}
-                        className="w-full bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-600 dark:hover:bg-blue-600 text-blue-700 dark:text-blue-300 hover:text-white dark:hover:text-white py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 flex justify-center items-center gap-2"
+                        className="flex-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 py-2 rounded-xl text-xs font-medium transition-colors"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         View
                       </button>
-
+                      <button
+                        onClick={() => handleProtectedAction(() => setActiveChatDoc(doc))}
+                        className="flex-1 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 py-2 rounded-xl text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                      >
+                        <span>✨</span> AI
+                      </button>
                       <div className="flex gap-2">
-                        {/* Download & Share - Uses handleProtectedAction */}
                         <button
                           onClick={() => handleProtectedAction(() => handleDownload(doc))}
-                          className="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-green-50 dark:hover:bg-green-900/30 text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex justify-center items-center gap-1.5"
+                          className="w-10 flex items-center justify-center bg-gray-50 dark:bg-[#303134]/50 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#303134] rounded-xl transition-colors"
+                          title="Download"
                         >
-                          Download
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         </button>
                         <button
-                          onClick={() => handleProtectedAction(() => handleShare(doc))}
-                          className="flex-1 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex justify-center items-center gap-1.5"
+                          onClick={() => handleShare(doc)}
+                          className="w-10 flex items-center justify-center bg-gray-50 dark:bg-[#303134]/50 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#303134] rounded-xl transition-colors"
+                          title="Share"
                         >
-                          Share
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                         </button>
                       </div>
                     </div>
@@ -326,7 +303,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
       {/* Modals */}
       {activeChatDoc && <ChatModal document={activeChatDoc} onClose={() => setActiveChatDoc(null)} />}
       {activePdfDoc && <PdfModal document={activePdfDoc} onClose={() => setActivePdfDoc(null)} />}
-        {isLoggedIn && <FloatingChatbot />}
+      {isLoggedIn && <FloatingChatbot />}
     </div>
   );
 }

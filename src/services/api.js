@@ -23,6 +23,7 @@ export const authAPI = {
     register: (userData) => api.post('/register/', userData),
     verify: (email, code) => api.post('/verify-otp/', { email, otp: code }),
     resendOtp: (email) => api.post('/resend-otp/', { email }),
+    getProfile: () => api.get('/profile/'),
 };
 
 // Document endpoints
