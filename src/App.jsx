@@ -8,6 +8,7 @@ import Profile from './components/Profile'; // 1. Import Profile
 import { ThemeProvider } from './context/ThemeContext';
 import MobileNavbar from './components/MobileNavbar';
 import Search from './components/Search';
+import FloatingChatbot from './components/FloatingChatbot'; // Import FloatingChatbot
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -31,7 +32,7 @@ function App() {
             <Route path="/verify-email" element={<VerifyEmail />} />
             
             <Route path="/dashboard" element={<Dashboard isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
-            
+            <Route path="/ai" element={isLoggedIn ? <FloatingChatbot /> : <Navigate to="/login" />} />
             {/* 2. Add the Profile Route */}
             <Route path="/profile" element={isLoggedIn ? <Profile setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/login" />} />
             

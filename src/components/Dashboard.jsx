@@ -7,7 +7,6 @@ import PdfModal from './PdfModal';
 import FloatingChatbot from './FloatingChatbot';
 import ThemeToggle from './ThemeToggle'; 
 
-
 export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
   const navigate = useNavigate(); 
 
@@ -22,8 +21,11 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
   
-  // Added state for dynamic profile initials
+  // State for dynamic profile initials
   const [username, setUsername] = useState('');
+  
+  // State for FAQ accordion
+  const [openFaq, setOpenFaq] = useState(null);
 
   const handleProtectedAction = (action) => {
     if (!isLoggedIn) {
@@ -33,7 +35,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
     }
   };
 
-  // Added useEffect to fetch the real user data for the Profile Icon
+  // Fetch the real user data for the Profile Icon
   useEffect(() => {
     if (isLoggedIn) {
       authAPI.getProfile()
@@ -103,11 +105,73 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
     setTimeout(() => setToastMessage(''), 3000);
   };
 
-  // Added helper function to extract initials
   const getInitials = (name) => {
     if (!name) return '👤';
     return name.substring(0, 2).toUpperCase();
   };
+
+  const toggleFaq = (index) => {
+    setOpenFaq(openFaq === index ? null : index);
+  };
+
+  // ----------------------------------------------------------------------
+  // EXPANDED FAQ DATA WITH INLINE JSX FOR ACTION LINKS
+  // ----------------------------------------------------------------------
+  const faqs = [
+    {
+      question: "How do I find and view documents?",
+      answer: (
+        <div className="space-y-3">
+          <p>Navigating Notesroom is designed to be effortless. You can browse manually by clicking through your specific Semester and Subject folders directly from this dashboard. Once you locate the desired file, you can instantly view it in our seamless PDF reader or download it to your device for offline studying.</p>
+          <p>If you know exactly what you are looking for, we recommend using our lightning-fast global search function to jump straight to your notes without clicking through folders.</p>
+          <button onClick={() => handleProtectedAction(() => navigate('/search'))} className="text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1.5 mt-2 transition-colors">
+            Go to Search Page <span aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+      )
+    },
+    {
+      question: "How does the AI Chat assistant work?",
+      answer: (
+        <div className="space-y-3">
+          <p>Our intelligent AI assistant transforms how you interact with your study materials. By clicking the <strong>'✨ AI'</strong> button on any document, our system instantly reads and comprehends the entire PDF text.</p>
+          <p>You can ask the AI to summarize complex topics, explain difficult formulas, extract key bullet points, or even generate practice quiz questions based strictly on the document's content. It's like having a personal tutor available 24/7 directly inside your classroom.</p>
+          <button onClick={() => handleProtectedAction(() => navigate('/ai'))} className="text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1.5 mt-2 transition-colors">
+            Try AI Chat Now <span aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+      )
+    },
+    {
+      question: "How do I create an account or log in?",
+      answer: (
+        <div className="space-y-3">
+          <p>Creating an account unlocks the full potential of Notesroom, giving you unrestricted access to viewing, downloading, and chatting with our curated documents. The registration process is completely secure and takes less than a minute.</p>
+          <p>You simply need to provide a username, a valid email address, and a strong password. We will send a secure 6-digit verification code to your email to confirm your identity. If you already have an account, just sign in!</p>
+          <div className="flex flex-wrap gap-4 mt-3">
+            <button onClick={() => navigate('/register')} className="text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1.5 transition-colors">
+              Sign Up for Free <span aria-hidden="true">&rarr;</span>
+            </button>
+            <button onClick={() => navigate('/login')} className="text-gray-600 dark:text-gray-300 font-bold hover:text-gray-900 dark:hover:text-white hover:underline flex items-center gap-1.5 transition-colors">
+              Log In to Account <span aria-hidden="true">&rarr;</span>
+            </button>
+          </div>
+        </div>
+      )
+    },
+    {
+      question: "Where can I manage my account and app preferences?",
+      answer: (
+        <div className="space-y-3">
+          <p>Your profile acts as your central command center. Here, you can review your account details, verify your active subscription tier, and customize your application experience entirely to your liking.</p>
+          <p>You have full control over preferences, including toggling Dark Mode for comfortable late-night studying, turning email alerts on or off, and selecting your preferred display language (English, Hindi, or Gujarati).</p>
+          <button onClick={() => handleProtectedAction(() => navigate('/profile'))} className="text-indigo-600 dark:text-indigo-400 font-bold hover:underline flex items-center gap-1.5 mt-2 transition-colors">
+            Open Profile Settings <span aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+      )
+    }
+  ];
 
   const FolderSkeleton = () => (
     <div className="bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 flex items-center gap-4 w-full animate-pulse">
@@ -128,7 +192,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
         </div>
       )}
 
-      {/* NAVBAR - Taller and more premium looking on desktop */}
+      {/* NAVBAR */}
       <nav className="sticky top-0 z-40 bg-[#f0f4f9]/80 dark:bg-[#131314]/80 backdrop-blur-xl border-b border-transparent dark:border-gray-800/30">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex justify-between h-14 md:h-18 items-center">
@@ -145,7 +209,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
             
               {isLoggedIn ? (
                 <>
-                  {/* Desktop Links: Slim Text Words Only */}
                   <div className="hidden md:flex items-center gap-6 mr-2">
                     <button 
                       onClick={() => navigate('/search')} 
@@ -161,10 +224,9 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                     </button>
                   </div>
 
-                  {/* Mobile Profile Icon: Kept exactly as before but hidden on Desktop */}
                   <button
                     onClick={() => navigate('/profile')}
-                    className="flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold hover:scale-105 transition-transform shadow-sm"
+                    className="md:hidden flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold hover:scale-105 transition-transform shadow-sm"
                     title="Profile"
                   >
                     {getInitials(username)}
@@ -184,10 +246,10 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
         </div>
       </nav>
 
-      {/* MAIN CONTENT - Added more vertical breathing space on desktop */}
+      {/* MAIN CONTENT */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 animate-fade-in">
         
-        {/* GUEST BANNER - Enhanced sizes and padding on widescreen */}
+        {/* GUEST BANNER */}
         {!isLoggedIn && (
           <div className="mb-6 md:mb-8 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-2xl p-4 md:p-6 flex items-center gap-3 md:gap-5 shadow-sm">
             <div className="text-2xl md:text-4xl shrink-0">👋</div>
@@ -198,7 +260,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
           </div>
         )}
 
-        {/* BREADCRUMBS - Increased touch and readability space */}
+        {/* BREADCRUMBS */}
         <div className="flex flex-wrap items-center gap-1.5 md:gap-2.5 mb-6 md:mb-8 text-sm md:text-base">
           <button
             onClick={() => setCurrentView('semesters')}
@@ -283,13 +345,12 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
               </div>
             )}
 
-            {/* VIEW 3: DOCUMENTS - Beautifully spacious spacing and typography layout */}
+            {/* VIEW 3: DOCUMENTS */}
             {currentView === 'documents' && selectedSubject && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {selectedSubject.documents.map(doc => (
                   <div key={doc.id} className="bg-white dark:bg-[#1e1f20] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 p-4 md:p-5 flex flex-col gap-4 md:gap-5 hover:shadow-md transition-shadow duration-200">
 
-                    {/* Doc Info */}
                     <div className="flex items-start gap-3 md:gap-4">
                       <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-[#303134] rounded-xl text-xl md:text-2xl flex shrink-0 items-center justify-center">📄</div>
                       <div className="flex-1 min-w-0">
@@ -298,7 +359,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       </div>
                     </div>
 
-                    {/* Action Row - Ultra Slim on mobile, perfectly spacious on desktop */}
                     <div className="flex gap-2 md:gap-3 mt-auto">
                       <button
                         onClick={() => handleProtectedAction(() => setActivePdfDoc(doc))}
@@ -335,6 +395,48 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
             )}
           </>
         )}
+
+        {/* ----------------------------------------------------------------------
+            ENHANCED GLASSY FAQ SECTION
+        ---------------------------------------------------------------------- */}
+        <div className="mt-20 pt-8 border-t border-gray-200/60 dark:border-gray-800/50 mb-8 animate-fade-in">
+          <div className="mb-6 px-2">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-[#e3e3e3]">Frequently Asked Questions</h2>
+            <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mt-1">Everything you need to know about using Notesroom.</p>
+          </div>
+          
+          <div className="flex flex-col gap-4">
+            {faqs.map((faq, index) => (
+              <div 
+                key={index} 
+                // Glassmorphism background classes applied to each FAQ card
+                className="bg-white/60 dark:bg-[#1e1f20]/60 backdrop-blur-xl rounded-2xl shadow-sm border border-white/50 dark:border-gray-800/50 overflow-hidden transition-all duration-300"
+              >
+                <button
+                  onClick={() => toggleFaq(index)}
+                  className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-white/40 dark:hover:bg-[#303134]/40 transition-colors focus:outline-none group"
+                >
+                  <span className="text-sm md:text-base font-bold text-gray-800 dark:text-[#e3e3e3] text-left group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {faq.question}
+                  </span>
+                  <div className={`w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-white/50 dark:bg-[#131314]/80 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors shrink-0 shadow-sm ${openFaq === index ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                    <svg className={`w-5 h-5 transition-transform duration-300 ${openFaq === index ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                  </div>
+                </button>
+                
+                {/* Expandable Answer Area */}
+                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaq === index ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                  <div className="px-5 pb-6 pt-2 border-t border-gray-200/30 dark:border-gray-700/30">
+                    <div className="text-sm md:text-[15px] text-gray-600 dark:text-gray-300 leading-relaxed">
+                      {faq.answer}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </main>
 
       {/* Modals */}

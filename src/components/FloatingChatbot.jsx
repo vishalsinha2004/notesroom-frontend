@@ -1,16 +1,24 @@
+// src/components/FloatingChatbot.jsx
 import { useState, useRef, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom'; // 1. Added Router hooks
 import { documentAPI } from '../services/api';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 export default function FloatingChatbot() {
-  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // 2. Check if we are currently on the dedicated /ai page
+  const isAiPage = location.pathname === '/ai';
+
+  // 3. Automatically set isOpen to true if we are on the /ai page
+  const [isOpen, setIsOpen] = useState(isAiPage);
   const [messages, setMessages] = useState([]); 
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
   
-  // NEW: State and Ref for File Uploads
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -21,6 +29,13 @@ export default function FloatingChatbot() {
   const textareaRef = useRef(null); 
   
   const isChatStarted = messages.length > 0;
+
+  // 4. Keep isOpen synced if the route changes
+  useEffect(() => {
+    if (isAiPage) {
+      setIsOpen(true);
+    }
+  }, [isAiPage]);
 
   useEffect(() => {
     if (isOpen) {
@@ -44,15 +59,22 @@ export default function FloatingChatbot() {
       const scrollHeight = textareaRef.current.scrollHeight;
       textareaRef.current.style.height = `${Math.max(56, Math.min(scrollHeight, 200))}px`;
     }
-  }, [input, selectedFile]); // Added selectedFile so it resizes when an attachment is added
+  }, [input, selectedFile]); 
 
-  // NEW: Handle File Selection from the + Button
+  // 5. Custom close handler to navigate back to dashboard if we were on the /ai page
+  const handleClose = () => {
+    setIsOpen(false);
+    if (isAiPage) {
+      navigate('/dashboard'); 
+    }
+  };
+
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setSelectedFile(file); // Stores the file temporarily
+      setSelectedFile(file); 
     }
-    e.target.value = null; // Clear input so the same file can be selected again
+    e.target.value = null; 
   };
 
   const toggleListening = () => {
@@ -107,7 +129,6 @@ export default function FloatingChatbot() {
   const handleSend = async (e) => {
     if (e) e.preventDefault();
     
-    // Prevent sending if empty and no file attached
     if ((!input.trim() && !selectedFile) || isTyping) return;
 
     if (isListening) {
@@ -115,7 +136,6 @@ export default function FloatingChatbot() {
       setIsListening(false);
     }
 
-    // Append file context to the text message
     let userText = input;
     if (selectedFile) {
       userText = `[Attached Document: ${selectedFile.name}]\n${input}`;
@@ -123,7 +143,7 @@ export default function FloatingChatbot() {
 
     setMessages(prev => [...prev, { role: 'user', text: userText }]);
     setInput('');
-    setSelectedFile(null); // Clear attachment preview
+    setSelectedFile(null); 
     setIsTyping(true);
     
     if (textareaRef.current) {
@@ -209,7 +229,6 @@ export default function FloatingChatbot() {
         className="relative flex flex-col w-full bg-[#f0f4f9] dark:bg-[#1e1f20] rounded-[32px] focus-within:shadow-md border border-transparent dark:border-gray-800/30 transition-all duration-200"
       >
         
-        {/* NEW: Attached Document Preview Pill */}
         {selectedFile && (
           <div className="relative inline-flex items-center gap-2 m-4 mb-0 px-3 py-2 bg-white dark:bg-[#131314] border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm animate-fade-in self-start z-10">
             <span className="text-lg">
@@ -229,7 +248,6 @@ export default function FloatingChatbot() {
         )}
 
         <div className="relative flex items-end w-full">
-          {/* NEW: Hidden File Input */}
           <input 
             type="file" 
             ref={fileInputRef} 
@@ -238,7 +256,6 @@ export default function FloatingChatbot() {
             className="hidden" 
           />
 
-          {/* Plus Icon triggers the hidden input */}
           <button 
             type="button"
             onClick={() => fileInputRef.current?.click()}
@@ -262,8 +279,6 @@ export default function FloatingChatbot() {
           <div className="absolute right-3 bottom-2 flex items-center gap-1 z-10">
             {!input.trim() && !isListening && !selectedFile ? (
               <div className="flex items-center gap-2 pr-1">
-                
-                
                 <button 
                   type="button"
                   onClick={toggleListening}
@@ -339,10 +354,13 @@ export default function FloatingChatbot() {
         }
       `}</style>
 
-      {!isOpen && (
+      {/* Hide the floating trigger button completely if we are actively ON the /ai page */}
+      {!isOpen && !isAiPage && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full shadow-2xl shadow-blue-500/40 flex items-center justify-center hover:scale-110 transition-transform duration-300 z-50 group"
+          // CHANGED: Added bottom-24 for mobile to avoid the MobileNavbar, and md:bottom-6 for desktop. 
+          // Also boosted z-index to z-[60] to ensure it sits perfectly on top of everything.
+          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full shadow-2xl shadow-blue-500/40 flex items-center justify-center hover:scale-110 transition-transform duration-300 z-[60] group"
         >
           <span className="text-2xl animate-pulse">✨</span>
         </button>
@@ -354,7 +372,7 @@ export default function FloatingChatbot() {
           <div className="flex items-center justify-between px-6 py-4 bg-transparent shrink-0 z-10 relative">
             <div className="flex items-center gap-4">
               <button 
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose} // 6. Use the custom handleClose here
                 className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-gray-100 dark:bg-[#1e1f20] px-4 py-2 rounded-xl font-medium"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -365,13 +383,12 @@ export default function FloatingChatbot() {
             </div>
 
             <div className="flex items-center gap-3">
-              <span className="text-xl"></span>
               <div>
                 <h3 className="font-medium text-gray-900 dark:text-[#e3e3e3] text-lg leading-tight">Notesroom AI</h3>
               </div>
             </div>
             
-            <div className="w-[150px] hidden md:block"></div>
+            <div className="w-[100px] hidden md:block"></div>
           </div>
 
           {!isChatStarted ? (
