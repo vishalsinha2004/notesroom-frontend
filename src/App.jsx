@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard';
 import Profile from './components/Profile'; // 1. Import Profile
 import { ThemeProvider } from './context/ThemeContext';
 import MobileNavbar from './components/MobileNavbar';
+import Search from './components/Search';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -36,6 +37,7 @@ function App() {
             
             <Route path="/" element={<Navigate to="/dashboard" />} />
             <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
+            <Route path="/search" element={<Search isLoggedIn={isLoggedIn} />} />
           </Routes>
           
           {isLoggedIn && <MobileNavbar />}
