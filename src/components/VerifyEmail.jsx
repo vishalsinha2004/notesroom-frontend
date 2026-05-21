@@ -12,7 +12,7 @@ export default function VerifyEmail() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isResending, setIsResending] = useState(false);
 
-  // 1. New Toast State for professional popups
+  // New Toast State for professional popups
   const [toast, setToast] = useState({ show: false, message: '' });
   
   const location = useLocation();
@@ -30,7 +30,7 @@ export default function VerifyEmail() {
     return <Navigate to="/login" />;
   }
 
-  // 2. Custom Toast Trigger Function
+  // Custom Toast Trigger Function
   const showToastMsg = (message) => {
     setToast({ show: true, message });
     // Hide toast after 3 seconds
@@ -82,37 +82,42 @@ export default function VerifyEmail() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50/50 dark:bg-gray-950 py-12 px-4 sm:px-6 lg:px-8 font-sans relative overflow-hidden">
+    // Background matches the Dashboard/Profile/Login exactly
+    <div className="min-h-screen flex items-center justify-center bg-[#f0f4f9] dark:bg-[#131314] py-12 px-4 sm:px-6 lg:px-8 font-sans relative overflow-hidden transition-colors duration-300">
       
-      {/* 3. PROFESSIONAL TOAST NOTIFICATION UI */}
+      {/* PROFESSIONAL TOAST NOTIFICATION UI */}
       {toast.show && (
-        <div className="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-4 rounded-2xl shadow-2xl z-50 flex items-center gap-3 font-bold transition-all duration-300">
-          <span className="text-xl">✅</span> 
+        <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 bg-gray-900 dark:bg-[#e3e3e3] text-white dark:text-gray-900 px-5 py-3 rounded-full shadow-lg z-50 animate-slide-in-up text-sm font-medium flex items-center gap-2">
+          <span>✅</span> 
           {toast.message}
         </div>
       )}
 
-      {/* Decorative Background Blob */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/20 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+      {/* Decorative Background Blob - Scaled appropriately */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-blue-500/10 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none opacity-70 md:opacity-100 transition-opacity"></div>
 
-      <div className="max-w-md w-full space-y-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800/50 text-center relative z-10">
-        <div>
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 mb-6">
-            <span className="text-3xl">✉️</span>
+      {/* Main Card - Slimmer padding on mobile, rounded like Profile panels */}
+      <div className="max-w-md w-full bg-white dark:bg-[#1e1f20] p-6 md:p-10 rounded-[24px] shadow-sm md:shadow-xl border border-transparent dark:border-gray-800/30 text-center relative z-10 animate-fade-in">
+        
+        <div className="mb-8">
+          <div className="mx-auto w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 mb-5 md:mb-6">
+            <span className="text-2xl md:text-3xl">✉️</span>
           </div>
-          <h2 className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Check Your Email</h2>
-          <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
+            Check Your Email
+          </h2>
+          <p className="mt-2 text-xs md:text-sm text-gray-500 dark:text-gray-400 font-medium">
             We sent a 6-digit code to <strong className="text-gray-900 dark:text-white">{email}</strong>.
           </p>
         </div>
         
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 text-left rounded-r-xl">
-            <p className="text-sm text-red-700 dark:text-red-400 font-medium">{error}</p>
+          <div className="mb-6 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 text-left rounded-r-xl animate-fade-in">
+            <p className="text-xs md:text-sm text-red-700 dark:text-red-400 font-medium">{error}</p>
           </div>
         )}
 
-        <form onSubmit={handleVerify} className="mt-8 space-y-6">
+        <form onSubmit={handleVerify} className="space-y-5 md:space-y-6">
           <input 
             type="text" 
             placeholder="• • • • • •" 
@@ -121,18 +126,17 @@ export default function VerifyEmail() {
             maxLength="6"
             required 
             disabled={isVerifying}
-            className="appearance-none block w-full px-3 py-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 placeholder-gray-400 text-gray-900 dark:text-white rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-center text-3xl tracking-[0.5em] font-mono transition-all disabled:opacity-50"
+            className="w-full bg-gray-100 dark:bg-[#131314] border border-transparent placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-center text-2xl md:text-3xl tracking-[0.3em] md:tracking-[0.5em] font-mono disabled:opacity-50"
           />
           
-          {/* 4. BUTTON WITH LOADING SPINNER */}
           <button 
             type="submit" 
             disabled={isVerifying || code.length < 6} 
-            className="w-full flex justify-center items-center py-4 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
+            className="w-full flex justify-center items-center py-3.5 md:py-4 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm md:text-base font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed group"
           >
             {isVerifying ? (
               <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin -ml-1 mr-3 h-4 w-4 md:h-5 md:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -146,17 +150,17 @@ export default function VerifyEmail() {
 
         <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800/50">
           {timeLeft > 0 ? (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
               Resend code in <span className="font-bold text-blue-600 dark:text-blue-400">{formatTime(timeLeft)}</span>
             </p>
           ) : (
             <button 
               onClick={handleResend}
               disabled={isResending}
-              className="text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 disabled:opacity-50 transition-colors flex items-center justify-center gap-2 mx-auto"
+              className="text-xs md:text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 disabled:opacity-50 transition-colors flex items-center justify-center gap-2 mx-auto"
             >
               {isResending && (
-                <svg className="animate-spin h-4 w-4 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-3 w-3 md:h-4 md:w-4 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
