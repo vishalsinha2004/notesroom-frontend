@@ -10,6 +10,10 @@ export default function FloatingChatbot() {
   const [isTyping, setIsTyping] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
   
+  // NEW: State and Ref for File Uploads
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
+
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
   
@@ -40,7 +44,16 @@ export default function FloatingChatbot() {
       const scrollHeight = textareaRef.current.scrollHeight;
       textareaRef.current.style.height = `${Math.max(56, Math.min(scrollHeight, 200))}px`;
     }
-  }, [input]);
+  }, [input, selectedFile]); // Added selectedFile so it resizes when an attachment is added
+
+  // NEW: Handle File Selection from the + Button
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file); // Stores the file temporarily
+    }
+    e.target.value = null; // Clear input so the same file can be selected again
+  };
 
   const toggleListening = () => {
     if (isListening) {
@@ -93,16 +106,24 @@ export default function FloatingChatbot() {
 
   const handleSend = async (e) => {
     if (e) e.preventDefault();
-    if (!input.trim() || isTyping) return;
+    
+    // Prevent sending if empty and no file attached
+    if ((!input.trim() && !selectedFile) || isTyping) return;
 
     if (isListening) {
       recognitionRef.current?.stop();
       setIsListening(false);
     }
 
-    const userText = input;
+    // Append file context to the text message
+    let userText = input;
+    if (selectedFile) {
+      userText = `[Attached Document: ${selectedFile.name}]\n${input}`;
+    }
+
     setMessages(prev => [...prev, { role: 'user', text: userText }]);
     setInput('');
+    setSelectedFile(null); // Clear attachment preview
     setIsTyping(true);
     
     if (textareaRef.current) {
@@ -165,7 +186,7 @@ export default function FloatingChatbot() {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      if (input.trim() && !isTyping) {
+      if ((input.trim() || selectedFile) && !isTyping) {
         handleSend(e);
       }
     }
@@ -185,61 +206,96 @@ export default function FloatingChatbot() {
     }`}>
       <form 
         onSubmit={handleSend} 
-        className="relative flex items-end w-full bg-[#f0f4f9] dark:bg-[#1e1f20] rounded-[32px] focus-within:shadow-md border border-transparent dark:border-gray-800/30 transition-all duration-200"
+        className="relative flex flex-col w-full bg-[#f0f4f9] dark:bg-[#1e1f20] rounded-[32px] focus-within:shadow-md border border-transparent dark:border-gray-800/30 transition-all duration-200"
       >
-        <button 
-          type="button"
-          className="absolute left-3 bottom-2 w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-[#303134] rounded-full transition-colors z-10"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v12m-6-6h12"></path></svg>
-        </button>
-
-        <textarea 
-          ref={textareaRef}
-          value={input} 
-          onChange={(e) => setInput(e.target.value)} 
-          onKeyDown={handleKeyDown}
-          placeholder={isListening ? "Listening..." : "Ask Notesroom AI..."} 
-          disabled={isTyping}
-          rows={1}
-          className="custom-scrollbar w-full pl-14 pr-[120px] py-4 bg-transparent text-gray-900 dark:text-[#e3e3e3] placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none resize-none leading-relaxed overflow-y-auto rounded-[32px] text-[15px]"
-          style={{ minHeight: '56px' }}
-        />
         
-        <div className="absolute right-3 bottom-2 flex items-center gap-1 z-10">
-          {!input.trim() && !isListening ? (
-            <div className="flex items-center gap-2 pr-1">
-              <button 
-                type="button"
-                onClick={toggleListening}
-                className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-[#303134] rounded-full transition-colors"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 pr-1">
-              {isListening ? (
+        {/* NEW: Attached Document Preview Pill */}
+        {selectedFile && (
+          <div className="relative inline-flex items-center gap-2 m-4 mb-0 px-3 py-2 bg-white dark:bg-[#131314] border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm animate-fade-in self-start z-10">
+            <span className="text-lg">
+              {selectedFile.type.includes('pdf') ? '📄' : selectedFile.type.includes('image') ? '🖼️' : '📝'}
+            </span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-[150px] truncate" title={selectedFile.name}>
+              {selectedFile.name}
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedFile(null)}
+              className="ml-1 w-5 h-5 flex items-center justify-center bg-gray-100 dark:bg-gray-800 hover:bg-red-100 dark:hover:bg-red-900/40 hover:text-red-500 dark:hover:text-red-400 text-gray-500 rounded-full text-[10px] transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        <div className="relative flex items-end w-full">
+          {/* NEW: Hidden File Input */}
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleFileUpload} 
+            accept=".pdf,.doc,.docx,.txt,image/*" 
+            className="hidden" 
+          />
+
+          {/* Plus Icon triggers the hidden input */}
+          <button 
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute left-3 bottom-2 w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-[#303134] rounded-full transition-colors z-10"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v12m-6-6h12"></path></svg>
+          </button>
+
+          <textarea 
+            ref={textareaRef}
+            value={input} 
+            onChange={(e) => setInput(e.target.value)} 
+            onKeyDown={handleKeyDown}
+            placeholder={isListening ? "Listening..." : "Ask Notesroom AI..."} 
+            disabled={isTyping}
+            rows={1}
+            className="custom-scrollbar w-full pl-14 pr-[120px] py-4 bg-transparent text-gray-900 dark:text-[#e3e3e3] placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none resize-none leading-relaxed overflow-y-auto rounded-[32px] text-[15px]"
+            style={{ minHeight: '56px' }}
+          />
+          
+          <div className="absolute right-3 bottom-2 flex items-center gap-1 z-10">
+            {!input.trim() && !isListening && !selectedFile ? (
+              <div className="flex items-center gap-2 pr-1">
+                
+                
                 <button 
                   type="button"
                   onClick={toggleListening}
-                  className="w-10 h-10 flex items-center justify-center text-red-500 bg-red-100 dark:bg-red-900/30 rounded-full animate-pulse transition-colors"
+                  className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-[#303134] rounded-full transition-colors"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
                 </button>
-              ) : (
-                <button 
-                  type="submit" 
-                  disabled={isTyping}
-                  className="w-10 h-10 flex items-center justify-center bg-gray-200 dark:bg-[#303134] hover:bg-gray-300 dark:hover:bg-[#3c4043] text-gray-900 dark:text-white rounded-full transition-all disabled:opacity-50"
-                >
-                  <svg className="w-5 h-5 translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                  </svg>
-                </button>
-              )}
-            </div>
-          )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 pr-1">
+                {isListening ? (
+                  <button 
+                    type="button"
+                    onClick={toggleListening}
+                    className="w-10 h-10 flex items-center justify-center text-red-500 bg-red-100 dark:bg-red-900/30 rounded-full animate-pulse transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+                  </button>
+                ) : (
+                  <button 
+                    type="submit" 
+                    disabled={isTyping}
+                    className="w-10 h-10 flex items-center justify-center bg-gray-200 dark:bg-[#303134] hover:bg-gray-300 dark:hover:bg-[#3c4043] text-gray-900 dark:text-white rounded-full transition-all disabled:opacity-50"
+                  >
+                    <svg className="w-5 h-5 translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </form>
     </div>
@@ -407,13 +463,12 @@ export default function FloatingChatbot() {
                     </div>
                   ))}
                   
-                  {/* UPDATED: Sleek Skeleton Loader replacing the 3 dots */}
                   {isTyping && (
-                    <div className="flex justify-start w-full">
-                      <div className="relative flex flex-col w-full max-w-[95%] md:max-w-[85%] px-6 py-4 gap-3">
-                        <div className="h-3 md:h-4 bg-gray-200 dark:bg-[#303134] rounded-full animate-pulse w-full"></div>
-                        <div className="h-3 md:h-4 bg-gray-200 dark:bg-[#303134] rounded-full animate-pulse w-[90%]"></div>
-                        <div className="h-3 md:h-4 bg-gray-200 dark:bg-[#303134] rounded-full animate-pulse w-[75%]"></div>
+                    <div className="flex justify-start">
+                      <div className="bg-transparent px-6 py-5 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-[#e3e3e3] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                        <span className="w-2 h-2 bg-[#e3e3e3] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                        <span className="w-2 h-2 bg-[#e3e3e3] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                       </div>
                     </div>
                   )}
