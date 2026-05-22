@@ -114,7 +114,7 @@ export default function Search({ isLoggedIn }) {
 
   return (
     <div className="min-h-screen bg-[#f0f4f9] dark:bg-[#131314] text-gray-900 dark:text-[#e3e3e3] transition-colors duration-300 font-sans relative pb-20 md:pb-8">
-      
+
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 bg-gray-900 dark:bg-[#e3e3e3] text-white dark:text-gray-900 px-5 py-3 rounded-full shadow-lg z-50 animate-slide-in-up text-sm font-medium flex items-center gap-2">
@@ -127,41 +127,74 @@ export default function Search({ isLoggedIn }) {
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex justify-between h-14 md:h-18 items-center">
             <div className="flex items-center gap-2 md:gap-3 cursor-pointer group" onClick={() => navigate('/dashboard')}>
-               <button className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full hover:bg-gray-200 dark:hover:bg-[#1e1f20] transition-colors">
-                 <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"></path></svg>
-               </button>
+              <button className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full hover:bg-gray-200 dark:hover:bg-[#1e1f20] transition-colors">
+                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"></path></svg>
+              </button>
               <h1 className="text-lg md:text-xl font-semibold tracking-tight">Search Notes</h1>
             </div>
-            
-            
+
+
           </div>
         </div>
       </nav>
 
       {/* MAIN CONTENT */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 animate-fade-in">
-        
-        {/* BIG SEARCH BAR */}
-        <div className="relative w-full mb-8 md:mb-12">
-          <div className="absolute inset-y-0 left-4 md:left-6 flex items-center pointer-events-none">
-            <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-          </div>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search for documents, topics, or subjects..."
-            autoFocus
-            className="w-full bg-white dark:bg-[#1e1f20] text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800/50 rounded-2xl md:rounded-3xl pl-12 md:pl-16 pr-12 py-4 md:py-5 text-sm md:text-lg font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-gray-400"
-          />
-          {query && (
-            <button 
-              onClick={() => setQuery('')}
-              className="absolute inset-y-0 right-4 md:right-6 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+
+        {/* SEARCH AND AI BUTTON CONTAINER */}
+        <div className="flex items-stretch gap-3 md:gap-4 mb-8 md:mb-12">
+
+          {/* AI Page Button */}
+          <button
+            onClick={() => navigate('/ai')}
+            className="flex-shrink-0 flex items-center justify-center w-[60px] md:w-[76px] bg-white dark:bg-[#1e1f20] rounded-2xl md:rounded-3xl shadow-sm border border-gray-200 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-[#303134] hover:scale-[1.02] transition-all duration-200 group overflow-hidden relative"
+            title="Open Notesroom AI"
+          >
+            <svg
+              className="w-7 h-7 md:w-9 md:h-9 animate-[spin_4s_linear_infinite]"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-          )}
+              <path
+                d="M12 2C12.5 7.5 16.5 11.5 22 12C16.5 12.5 12.5 16.5 12 22C11.5 16.5 7.5 12.5 2 12C7.5 11.5 11.5 7.5 12 2Z"
+                fill="url(#searchAiGradient)"
+              />
+              <defs>
+                <linearGradient id="searchAiGradient" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#3B82F6" />
+                  <stop offset="0.5" stopColor="#8B5CF6" />
+                  <stop offset="1" stopColor="#EC4899" />
+                </linearGradient>
+              </defs>
+            </svg>
+
+            {/* Subtle background glow effect on hover (matching the floating button) */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-purple-500/10 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+          </button>
+
+          {/* BIG SEARCH BAR */}
+          <div className="relative w-full">
+            <div className="absolute inset-y-0 left-4 md:left-6 flex items-center pointer-events-none">
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search for documents, topics, or subjects..."
+              autoFocus
+              className="w-full h-full bg-white dark:bg-[#1e1f20] text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800/50 rounded-2xl md:rounded-3xl pl-12 md:pl-16 pr-12 py-4 md:py-5 text-sm md:text-lg font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-gray-400"
+            />
+            {query && (
+              <button
+                onClick={() => setQuery('')}
+                className="absolute inset-y-0 right-4 md:right-6 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              >
+                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* RESULTS AREA */}
@@ -191,7 +224,7 @@ export default function Search({ isLoggedIn }) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {results.map(doc => (
                 <div key={doc.id} className="bg-white dark:bg-[#1e1f20] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 p-4 md:p-5 flex flex-col gap-4 md:gap-5 hover:shadow-md transition-shadow duration-200">
-                  
+
                   {/* Doc Info */}
                   <div className="flex items-start gap-3 md:gap-4">
                     <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-[#303134] rounded-xl text-xl md:text-2xl flex shrink-0 items-center justify-center">📄</div>

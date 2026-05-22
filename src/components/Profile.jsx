@@ -14,6 +14,7 @@ export default function Profile({ setIsLoggedIn }) {
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [language, setLanguage] = useState('English');
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'system');
+  const [aiEnabled, setAiEnabled] = useState(true); // Added state for AI feature toggle
 
   useEffect(() => {
     authAPI.getProfile()
@@ -202,7 +203,7 @@ export default function Profile({ setIsLoggedIn }) {
           </div>
           
           {/* 4. Language Select */}
-          <div className="border-b border-transparent">
+          <div className="border-b border-gray-100 dark:border-gray-800/50">
             <button onClick={() => toggleSection('language')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
               <div className="flex items-center gap-3 md:gap-4">
                 <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
@@ -227,6 +228,31 @@ export default function Profile({ setIsLoggedIn }) {
               </div>
             )}
           </div>
+
+          {/* 5. Notesroom AI */}
+          <div className="border-b border-transparent">
+            <button onClick={() => toggleSection('ai')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
+              <div className="flex items-center gap-3 md:gap-4">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span className="text-sm md:text-base font-medium">Notesroom AI</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg className={`w-4 h-4 md:w-5 md:h-5 text-gray-400 transition-transform duration-200 ${expandedSection === 'ai' ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+              </div>
+            </button>
+            {expandedSection === 'ai' && (
+              <div className="px-5 py-4 md:py-6 bg-gray-50/50 dark:bg-[#131314]/50 border-t border-gray-100 dark:border-gray-800/50 flex flex-col gap-4">
+                
+                
+                <button 
+                  onClick={() => navigate('/ai')} 
+                  className="w-full py-2.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                >
+                  Use Notesroom AI 
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <h3 className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-2 md:mb-3 ml-2">Support</h3>
@@ -246,7 +272,7 @@ export default function Profile({ setIsLoggedIn }) {
             {expandedSection === 'help' && (
               <div className="px-5 py-5 bg-gray-50/50 dark:bg-[#131314]/50 border-t border-gray-100 dark:border-gray-800/50">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                  Need assistance with your notes or account? Our support team is here to help you get the best experience out of Notesroom <p class=" text-center text-blue-600 dark:text-blue-400 ">notesroomofficial@gmail.com</p>
+                  Need assistance with your notes or account? Our support team is here to help you get the best experience out of Notesroom <p className="text-center text-blue-600 dark:text-blue-400 mt-2">notesroomofficial@gmail.com</p>
                 </p>
                 <a href="mailto:notesroomofficial@gmail.com" className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors">
                   Contact Support Team

@@ -174,7 +174,8 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
   ];
 
   const FolderSkeleton = () => (
-    <div className="bg-white/50 dark:bg-[#1e1f20]/50 backdrop-blur-xl p-4 md:p-6 rounded-[24px] shadow-sm border border-gray-100/50 dark:border-gray-800/40 flex flex-col min-h-[160px] md:min-h-[200px] animate-pulse">
+    // Changed: min-h, rounded borders, and padding adjusted to perfectly match the real cards on mobile
+    <div className="bg-white/50 dark:bg-[#1e1f20]/50 backdrop-blur-xl p-4 md:p-6 rounded-[20px] md:rounded-3xl shadow-sm border border-gray-100/50 dark:border-gray-800/40 flex flex-col min-h-[140px] md:min-h-[180px] animate-pulse">
       
       {/* Top Row: Icon and Arrow placeholders */}
       <div className="flex justify-between items-start w-full">
@@ -320,7 +321,8 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+          // Changed: grid-cols-1 to grid-cols-2, and matched the gaps to your live data grid
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
             {[...Array(8)].map((_, i) => <FolderSkeleton key={i} />)}
           </div>
         ) : (
