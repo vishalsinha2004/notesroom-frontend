@@ -246,9 +246,9 @@ export default function Profile({ setIsLoggedIn }) {
             {expandedSection === 'help' && (
               <div className="px-5 py-5 bg-gray-50/50 dark:bg-[#131314]/50 border-t border-gray-100 dark:border-gray-800/50">
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                  Need assistance with your notes or account? Our support team is here to help you get the best experience out of Notesroom.
+                  Need assistance with your notes or account? Our support team is here to help you get the best experience out of Notesroom <p class=" text-center text-blue-600 dark:text-blue-400 ">notesroomofficial@gmail.com</p>
                 </p>
-                <a href="mailto:support@notesroom.com" className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors">
+                <a href="mailto:notesroomofficial@gmail.com" className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors">
                   Contact Support Team
                 </a>
               </div>

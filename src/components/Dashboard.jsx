@@ -1,14 +1,14 @@
 // src/components/Dashboard.jsx
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; 
-import { documentAPI, authAPI } from '../services/api'; 
+import { useNavigate } from 'react-router-dom';
+import { documentAPI, authAPI } from '../services/api';
 import ChatModal from './ChatModal';
 import PdfModal from './PdfModal';
 import FloatingChatbot from './FloatingChatbot';
-import ThemeToggle from './ThemeToggle'; 
+import ThemeToggle from './ThemeToggle';
 
 export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const [semesters, setSemesters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,10 +20,10 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
   const [currentView, setCurrentView] = useState('semesters');
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
-  
+
   // State for dynamic profile initials
   const [username, setUsername] = useState('');
-  
+
   // State for FAQ accordion
   const [openFaq, setOpenFaq] = useState(null);
 
@@ -174,12 +174,22 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
   ];
 
   const FolderSkeleton = () => (
-    <div className="bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 flex items-center gap-4 w-full animate-pulse">
-      <div className="w-12 h-12 bg-gray-200 dark:bg-[#303134] rounded-xl shrink-0"></div>
-      <div className="flex-1 space-y-2">
-        <div className="h-4 bg-gray-200 dark:bg-[#303134] rounded-md w-3/4"></div>
-        <div className="h-3 bg-gray-100 dark:bg-[#303134]/60 rounded-md w-1/4"></div>
+    <div className="bg-white/50 dark:bg-[#1e1f20]/50 backdrop-blur-xl p-4 md:p-6 rounded-[24px] shadow-sm border border-gray-100/50 dark:border-gray-800/40 flex flex-col min-h-[160px] md:min-h-[200px] animate-pulse">
+      
+      {/* Top Row: Icon and Arrow placeholders */}
+      <div className="flex justify-between items-start w-full">
+        <div className="w-12 h-12 md:w-14 md:h-14 bg-gray-200 dark:bg-gray-700/50 rounded-2xl shrink-0"></div>
+        <div className="w-8 h-8 bg-gray-100 dark:bg-gray-800/50 rounded-full shrink-0"></div>
       </div>
+      
+      {/* Bottom Row: Text placeholders */}
+      <div className="mt-auto pt-4 space-y-2 md:space-y-3">
+        {/* Title placeholder */}
+        <div className="h-4 md:h-5 bg-gray-200 dark:bg-gray-700/50 rounded-lg w-3/4"></div>
+        {/* Subtitle placeholder */}
+        <div className="h-3 md:h-3.5 bg-gray-100 dark:bg-gray-800/60 rounded-lg w-2/5"></div>
+      </div>
+      
     </div>
   );
 
@@ -206,18 +216,18 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-            
+
               {isLoggedIn ? (
                 <>
                   <div className="hidden md:flex items-center gap-6 mr-2">
-                    <button 
-                      onClick={() => navigate('/search')} 
+                    <button
+                      onClick={() => navigate('/search')}
                       className="text-[15px] font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                     >
                       Search
                     </button>
-                    <button 
-                      onClick={() => navigate('/profile')} 
+                    <button
+                      onClick={() => navigate('/profile')}
                       className="text-[15px] font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                     >
                       Profile
@@ -226,7 +236,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
 
                   <button
                     onClick={() => navigate('/profile')}
-                    className="md:hidden flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold hover:scale-105 transition-transform shadow-sm"
+                    className=" flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold hover:scale-105 transition-transform shadow-sm"
                     title="Profile"
                   >
                     {getInitials(username)}
@@ -240,7 +250,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                   Log In
                 </button>
               )}
-              
+
             </div>
           </div>
         </div>
@@ -248,7 +258,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
 
       {/* MAIN CONTENT */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 animate-fade-in">
-        
+
         {/* GUEST BANNER */}
         {!isLoggedIn && (
           <div className="mb-6 md:mb-8 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-2xl p-4 md:p-6 flex items-center gap-3 md:gap-5 shadow-sm">
@@ -261,30 +271,50 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
         )}
 
         {/* BREADCRUMBS */}
-        <div className="flex flex-wrap items-center gap-1.5 md:gap-2.5 mb-6 md:mb-8 text-sm md:text-base">
+        {/* MODERN GLASSY BREADCRUMBS */}
+        <div className="inline-flex items-center p-1.5 bg-white/60 dark:bg-[#1e1f20]/60 backdrop-blur-xl rounded-full border border-gray-200/50 dark:border-gray-800/50 shadow-sm mb-6 md:mb-8 max-w-full overflow-x-auto custom-scrollbar">
+          
+          {/* Root / All Semesters */}
           <button
             onClick={() => setCurrentView('semesters')}
-            className={`px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition-colors ${currentView === 'semesters' ? 'bg-[#e3e3e3] dark:bg-[#303134] text-gray-900 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-[#1e1f20]'}`}
+            className={`flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-[11px] md:text-sm font-bold transition-all duration-300 whitespace-nowrap shrink-0 ${
+              currentView === 'semesters'
+                ? 'bg-white dark:bg-[#303134] text-blue-600 dark:text-blue-400 shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-800/50'
+            }`}
           >
-            All Semesters
+            <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            Semesters
           </button>
+
+          {/* Semester Level */}
           {selectedSemester && currentView !== 'semesters' && (
             <>
-              <span className="text-gray-400 dark:text-gray-600 text-[10px] md:text-xs">❯</span>
+              <div className="px-1 md:px-2 text-gray-300 dark:text-gray-700 shrink-0">
+                <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path></svg>
+              </div>
               <button
                 onClick={() => setCurrentView('subjects')}
-                className={`px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium transition-colors ${currentView === 'subjects' ? 'bg-[#e3e3e3] dark:bg-[#303134] text-gray-900 dark:text-white' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-[#1e1f20]'}`}
+                className={`flex items-center px-3 py-1.5 md:px-4 md:py-2 rounded-full text-[11px] md:text-sm font-bold transition-all duration-300 whitespace-nowrap shrink-0 ${
+                  currentView === 'subjects'
+                    ? 'bg-white dark:bg-[#303134] text-purple-600 dark:text-purple-400 shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-800/50'
+                }`}
               >
                 {selectedSemester.name}
               </button>
             </>
           )}
+
+          {/* Subject Level */}
           {selectedSubject && currentView === 'documents' && (
             <>
-              <span className="text-gray-400 dark:text-gray-600 text-[10px] md:text-xs">❯</span>
-              <span className="px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-medium bg-[#e3e3e3] dark:bg-[#303134] text-gray-900 dark:text-white">
+              <div className="px-1 md:px-2 text-gray-300 dark:text-gray-700 shrink-0">
+                <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path></svg>
+              </div>
+              <div className="flex items-center px-3 py-1.5 md:px-4 md:py-2 rounded-full text-[11px] md:text-sm font-bold bg-white dark:bg-[#303134] text-red-500 dark:text-red-400 shadow-sm whitespace-nowrap shrink-0">
                 {selectedSubject.name}
-              </span>
+              </div>
             </>
           )}
         </div>
@@ -297,7 +327,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
           <>
             {/* VIEW 1: SEMESTERS */}
             {currentView === 'semesters' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
                 {semesters.map(sem => (
                   <div
                     key={sem.id}
@@ -305,16 +335,26 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       setSelectedSemester(sem);
                       setCurrentView('subjects');
                     })}
-                    className="group bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 hover:bg-gray-50 dark:hover:bg-[#303134]/40 transition-all duration-200 cursor-pointer flex items-center justify-between hover:shadow-md"
+                    // CHANGED: Converted to a tall, vertical flexbox with a minimum height to match documents
+                    className="group bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-xl p-4 md:p-6 rounded-[20px] md:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800/60 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-blue-900/10 transition-all duration-300 cursor-pointer flex flex-col gap-3 md:gap-4 min-h-[140px] md:min-h-[180px] relative overflow-hidden"
                   >
-                    <div className="flex items-center gap-4 md:gap-5">
-                      <div className="w-10 h-10 md:w-12 md:h-12 flex shrink-0 items-center justify-center bg-blue-50 dark:bg-gray-800 rounded-xl text-xl md:text-2xl">📁</div>
-                      <div>
-                        <h3 className="font-medium text-gray-900 dark:text-[#e3e3e3] md:text-base lg:text-lg transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">{sem.name}</h3>
-                        <p className="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 mt-0.5">{sem.subjects.length} Subjects</p>
+                    {/* Top Row: Icon + Arrow */}
+                    <div className="flex justify-between items-start w-full">
+                      <div className="w-12 h-12 md:w-14 md:h-14 flex shrink-0 items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl shadow-md shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg className="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                      </div>
+                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 dark:bg-[#131314] group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 transition-colors shrink-0">
+                        <svg className="w-4 h-4 text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path></svg>
                       </div>
                     </div>
-                    <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-300 dark:text-gray-600 group-hover:text-blue-500 transition-colors transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+
+                    {/* Bottom Row: Text (Pushed to bottom using mt-auto) */}
+                    <div className="mt-auto">
+                      <h3 className="font-bold text-gray-900 dark:text-[#e3e3e3] text-sm md:text-lg transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">{sem.name}</h3>
+                      <p className="text-[11px] md:text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">{sem.subjects.length} Subjects</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -322,7 +362,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
 
             {/* VIEW 2: SUBJECTS */}
             {currentView === 'subjects' && selectedSemester && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
                 {selectedSemester.subjects.map(sub => (
                   <div
                     key={sub.id}
@@ -330,64 +370,113 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       setSelectedSubject(sub);
                       setCurrentView('documents');
                     })}
-                    className="group bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 hover:bg-gray-50 dark:hover:bg-[#303134]/40 transition-all duration-200 cursor-pointer flex items-center justify-between hover:shadow-md"
+                    // CHANGED: Converted to a tall, vertical flexbox with a minimum height to match documents
+                    className="group bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-xl p-4 md:p-6 rounded-[20px] md:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800/60 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-purple-900/10 transition-all duration-300 cursor-pointer flex flex-col gap-3 md:gap-4 min-h-[140px] md:min-h-[180px] relative overflow-hidden"
                   >
-                    <div className="flex items-center gap-4 md:gap-5">
-                      <div className="w-10 h-10 md:w-12 md:h-12 flex shrink-0 items-center justify-center bg-indigo-50 dark:bg-gray-800 rounded-xl text-xl md:text-2xl">📚</div>
-                      <div>
-                        <h3 className="font-medium text-gray-900 dark:text-[#e3e3e3] md:text-base lg:text-lg transition-colors group-hover:text-indigo-500 dark:group-hover:text-indigo-400">{sub.name}</h3>
-                        <p className="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 mt-0.5">{sub.documents.length} Documents</p>
+                    {/* Top Row: Icon + Arrow */}
+                    <div className="flex justify-between items-start w-full">
+                      <div className="w-12 h-12 md:w-14 md:h-14 flex shrink-0 items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-2xl shadow-md shadow-purple-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg className="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                      </div>
+                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 dark:bg-[#131314] group-hover:bg-purple-50 dark:group-hover:bg-purple-900/30 transition-colors shrink-0">
+                        <svg className="w-4 h-4 text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-all transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path></svg>
                       </div>
                     </div>
-                    <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-300 dark:text-gray-600 group-hover:text-indigo-500 transition-colors transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+
+                    {/* Bottom Row: Text (Pushed to bottom using mt-auto) */}
+                    <div className="mt-auto">
+                      <h3 className="font-bold text-gray-900 dark:text-[#e3e3e3] text-sm md:text-lg transition-colors group-hover:text-purple-600 dark:group-hover:text-purple-400 line-clamp-2">{sub.name}</h3>
+                      <p className="text-[11px] md:text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">{sub.documents.length} Documents</p>
+                    </div>
                   </div>
                 ))}
               </div>
             )}
 
             {/* VIEW 3: DOCUMENTS */}
+            {/* VIEW 3: DOCUMENTS */}
             {currentView === 'documents' && selectedSubject && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                 {selectedSubject.documents.map(doc => (
-                  <div key={doc.id} className="bg-white dark:bg-[#1e1f20] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 p-4 md:p-5 flex flex-col gap-4 md:gap-5 hover:shadow-md transition-shadow duration-200">
+                  <div key={doc.id} className="group relative bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-xl rounded-[20px] md:rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800/60 p-3 md:p-5 flex flex-col hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-red-900/10 transition-all duration-300 min-h-[160px] md:min-h-[190px]">
 
-                    <div className="flex items-start gap-3 md:gap-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-[#303134] rounded-xl text-xl md:text-2xl flex shrink-0 items-center justify-center">📄</div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm md:text-base font-semibold text-gray-900 dark:text-[#e3e3e3] leading-snug line-clamp-2">{doc.title}</h3>
-                        <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-500 mt-1">Added {new Date(doc.uploaded_at).toLocaleDateString()}</p>
+                    {/* Absolute Positioned AI Button (Top Right) */}
+                    <div className="absolute top-3 right-3 md:top-5 md:right-5 z-10">
+                      <button
+                        onClick={() => handleProtectedAction(() => setActiveChatDoc(doc))}
+                        className="flex items-center justify-center gap-1 px-2 py-1 md:px-3 md:py-1.5 bg-purple-50/80 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-full border border-purple-200 dark:border-purple-800/50 transition-all shadow-sm hover:scale-105 group/ai"
+                        title="Ask AI"
+                      >
+                        <div className="relative flex items-center justify-center">
+                          <svg
+                            className="w-3 h-3 md:w-4 md:h-4 animate-[spin_4s_linear_infinite]"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M12 2C12.5 7.5 16.5 11.5 22 12C16.5 12.5 12.5 16.5 12 22C11.5 16.5 7.5 12.5 2 12C7.5 11.5 11.5 7.5 12 2Z"
+                              fill="url(#flowerGradientDocTop)"
+                            />
+                            <defs>
+                              <linearGradient id="flowerGradientDocTop" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                                <stop stopColor="#3B82F6" />
+                                <stop offset="0.5" stopColor="#8B5CF6" />
+                                <stop offset="1" stopColor="#EC4899" />
+                              </linearGradient>
+                            </defs>
+                          </svg>
+                        </div>
+                        <span className="font-bold text-[9px] md:text-[11px] bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 bg-clip-text text-transparent group-hover/ai:opacity-80 transition-opacity">
+                          AI
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Left Side: Document Icon & Title */}
+                    <div className="flex flex-col md:flex-row items-start gap-2.5 md:gap-4 flex-1 min-w-0 pr-12 md:pr-16 w-full">
+                      <div className="w-10 h-10 md:w-12 md:h-12 flex shrink-0 items-center justify-center bg-gradient-to-br from-red-500 to-orange-500 text-white rounded-xl shadow-md shadow-red-500/20 group-hover:scale-110 transition-transform duration-300">
+                        <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v6a1 1 0 001 1h6"></path>
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0 w-full">
+                        <h3 className="text-[11px] sm:text-xs md:text-base font-bold text-gray-900 dark:text-[#e3e3e3] leading-tight line-clamp-2 md:line-clamp-3 transition-colors group-hover:text-red-500 dark:group-hover:text-red-400">{doc.title}</h3>
+                        <p className="text-[9px] md:text-xs font-medium text-gray-500 dark:text-gray-500 mt-1 truncate">Added {new Date(doc.uploaded_at).toLocaleDateString()}</p>
                       </div>
                     </div>
 
-                    <div className="flex gap-2 md:gap-3 mt-auto">
+                    {/* BOTTOM ROW: View, Download, Share */}
+                    <div className="flex items-center gap-1.5 md:gap-3 mt-auto w-full pt-3 md:pt-4">
+
                       <button
                         onClick={() => handleProtectedAction(() => setActivePdfDoc(doc))}
-                        className="flex-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-colors"
+                        className="flex-1 bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 py-2 md:py-2.5 rounded-lg md:rounded-xl text-[10px] sm:text-[11px] md:text-sm font-semibold transition-colors flex items-center justify-center gap-1 md:gap-1.5 overflow-hidden"
                       >
-                        View
+                        <svg className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <span className="truncate">View</span>
                       </button>
-                      <button
-                        onClick={() => handleProtectedAction(() => setActiveChatDoc(doc))}
-                        className="flex-1 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-colors flex items-center justify-center gap-1"
-                      >
-                        <span>✨</span> AI
-                      </button>
-                      <div className="flex gap-2 md:gap-3">
+
+                      <div className="flex gap-1.5 md:gap-2 shrink-0">
                         <button
                           onClick={() => handleProtectedAction(() => handleDownload(doc))}
-                          className="w-10 h-9 md:w-12 md:h-10 flex items-center justify-center bg-gray-50 dark:bg-[#303134]/50 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#303134] rounded-xl transition-colors"
+                          className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-gray-50 dark:bg-[#303134]/50 text-gray-600 dark:text-gray-300 hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 rounded-lg md:rounded-xl transition-colors"
                           title="Download"
                         >
-                          <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                          <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         </button>
                         <button
                           onClick={() => handleShare(doc)}
-                          className="w-10 h-9 md:w-12 md:h-10 flex items-center justify-center bg-gray-50 dark:bg-[#303134]/50 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#303134] rounded-xl transition-colors"
+                          className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-gray-50 dark:bg-[#303134]/50 text-gray-600 dark:text-gray-300 hover:bg-green-100 hover:text-green-600 dark:hover:bg-green-900/30 dark:hover:text-green-400 rounded-lg md:rounded-xl transition-colors"
                           title="Share"
                         >
-                          <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                          <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                         </button>
                       </div>
+
                     </div>
                   </div>
                 ))}
@@ -399,43 +488,44 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
         {/* ----------------------------------------------------------------------
             ENHANCED GLASSY FAQ SECTION
         ---------------------------------------------------------------------- */}
-        <div className="mt-20 pt-8 border-t border-gray-200/60 dark:border-gray-800/50 mb-8 animate-fade-in">
-          <div className="mb-6 px-2">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-[#e3e3e3]">Frequently Asked Questions</h2>
-            <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mt-1">Everything you need to know about using Notesroom.</p>
-          </div>
-          
-          <div className="flex flex-col gap-4">
-            {faqs.map((faq, index) => (
-              <div 
-                key={index} 
-                // Glassmorphism background classes applied to each FAQ card
-                className="bg-white/60 dark:bg-[#1e1f20]/60 backdrop-blur-xl rounded-2xl shadow-sm border border-white/50 dark:border-gray-800/50 overflow-hidden transition-all duration-300"
-              >
-                <button
-                  onClick={() => toggleFaq(index)}
-                  className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-white/40 dark:hover:bg-[#303134]/40 transition-colors focus:outline-none group"
+        {currentView === 'semesters' && (
+          <div className="mt-20 pt-8 border-t border-gray-200/60 dark:border-gray-800/50 mb-8 animate-fade-in">
+            <div className="mb-6 px-2">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-[#e3e3e3]">Frequently Asked Questions</h2>
+              <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mt-1">Everything you need to know about using Notesroom.</p>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              {faqs.map((faq, index) => (
+                <div
+                  key={index}
+                  className="bg-white/60 dark:bg-[#1e1f20]/60 backdrop-blur-xl rounded-2xl shadow-sm border border-white/50 dark:border-gray-800/50 overflow-hidden transition-all duration-300"
                 >
-                  <span className="text-sm md:text-base font-bold text-gray-800 dark:text-[#e3e3e3] text-left group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {faq.question}
-                  </span>
-                  <div className={`w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-white/50 dark:bg-[#131314]/80 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors shrink-0 shadow-sm ${openFaq === index ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}`}>
-                    <svg className={`w-5 h-5 transition-transform duration-300 ${openFaq === index ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
-                  </div>
-                </button>
-                
-                {/* Expandable Answer Area */}
-                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaq === index ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                  <div className="px-5 pb-6 pt-2 border-t border-gray-200/30 dark:border-gray-700/30">
-                    <div className="text-sm md:text-[15px] text-gray-600 dark:text-gray-300 leading-relaxed">
-                      {faq.answer}
+                  <button
+                    onClick={() => toggleFaq(index)}
+                    className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-white/40 dark:hover:bg-[#303134]/40 transition-colors focus:outline-none group"
+                  >
+                    <span className="text-sm md:text-base font-bold text-gray-800 dark:text-[#e3e3e3] text-left group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {faq.question}
+                    </span>
+                    <div className={`w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-white/50 dark:bg-[#131314]/80 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors shrink-0 shadow-sm ${openFaq === index ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                      <svg className={`w-5 h-5 transition-transform duration-300 ${openFaq === index ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </button>
+
+                  {/* Expandable Answer Area */}
+                  <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaq === index ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="px-5 pb-6 pt-2 border-t border-gray-200/30 dark:border-gray-700/30">
+                      <div className="text-sm md:text-[15px] text-gray-600 dark:text-gray-300 leading-relaxed">
+                        {faq.answer}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
       </main>
 

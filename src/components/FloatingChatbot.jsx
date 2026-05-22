@@ -355,14 +355,36 @@ export default function FloatingChatbot() {
       `}</style>
 
       {/* Hide the floating trigger button completely if we are actively ON the /ai page */}
+     {/* Hide the floating trigger button completely if we are actively ON the /ai page */}
       {!isOpen && !isAiPage && (
         <button
           onClick={() => setIsOpen(true)}
-          // CHANGED: Added bottom-24 for mobile to avoid the MobileNavbar, and md:bottom-6 for desktop. 
-          // Also boosted z-index to z-[60] to ensure it sits perfectly on top of everything.
-          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-full shadow-2xl shadow-blue-500/40 flex items-center justify-center hover:scale-110 transition-transform duration-300 z-[60] group"
+          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-white dark:bg-[#1e1f20] rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] border border-gray-100 dark:border-gray-800 hover:scale-105 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 z-[60] group overflow-hidden"
         >
-          <span className="text-2xl animate-pulse">✨</span>
+          {/* Colorful Rotating Flower/Star Icon - Scaled Up */}
+          <div className="relative flex items-center justify-center">
+            <svg 
+              className="w-8 h-8 md:w-10 md:h-10 animate-[spin_4s_linear_infinite]" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path 
+                d="M12 2C12.5 7.5 16.5 11.5 22 12C16.5 12.5 12.5 16.5 12 22C11.5 16.5 7.5 12.5 2 12C7.5 11.5 11.5 7.5 12 2Z" 
+                fill="url(#flowerGradient)"
+              />
+              <defs>
+                <linearGradient id="flowerGradient" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#3B82F6"/>
+                  <stop offset="0.5" stopColor="#8B5CF6"/>
+                  <stop offset="1" stopColor="#EC4899"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          {/* Subtle background glow effect on hover */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-purple-500/10 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
         </button>
       )}
 
