@@ -22,6 +22,7 @@ export const authAPI = {
     login: (username, password) => api.post('/token/', { username, password }),
     register: (userData) => api.post('/register/', userData),
     verify: (email, code) => api.post('/verify-otp/', { email, otp: code }),
+    googleLogin: (token) => api.post('/google-login/', { token }),
     resendOtp: (email) => api.post('/resend-otp/', { email }),
     getProfile: () => api.get('/profile/'),
 };

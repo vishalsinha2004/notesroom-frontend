@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function Login({ setIsLoggedIn }) {
   const [username, setUsername] = useState('');
@@ -27,6 +28,27 @@ export default function Login({ setIsLoggedIn }) {
       navigate('/'); 
     } catch (err) {
       setError('Invalid username or password, or email not verified.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Google Login Handler
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      const response = await authAPI.googleLogin(credentialResponse.credential);
+      localStorage.setItem('access_token', response.data.access);
+      localStorage.setItem('refresh_token', response.data.refresh);
+      
+      if (typeof setIsLoggedIn === 'function') {
+          setIsLoggedIn(true);
+      }
+      navigate('/'); 
+    } catch (err) {
+      setError('Google authentication failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -125,6 +147,28 @@ export default function Login({ setIsLoggedIn }) {
             )}
           </button>
         </form>
+
+        {/* Google Authentication Divider and Button */}
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white dark:bg-[#1e1f20] text-gray-500 font-medium">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Google Login Failed. Please try again.')}
+              useOneTap
+              theme={document.documentElement.classList.contains('dark') ? 'filled_black' : 'outline'}
+              shape="pill"
+            />
+          </div>
+        </div>
         
         <p className="text-center text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-8 pt-6 border-t border-gray-100 dark:border-gray-800/50">
           Need an account? <Link to="/register" className="font-bold text-blue-600 dark:text-blue-400 hover:text-blue-500 transition-colors">Sign up here</Link>
@@ -133,3 +177,4 @@ export default function Login({ setIsLoggedIn }) {
     </div>
   );
 }
+console.log("My Google Client ID is:", import.meta.env.VITE_GOOGLE_CLIENT_ID);

@@ -10,6 +10,7 @@ import MobileNavbar from './components/MobileNavbar';
 import Search from './components/Search';
 import FloatingChatbot from './components/FloatingChatbot'; // Import FloatingChatbot
 
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

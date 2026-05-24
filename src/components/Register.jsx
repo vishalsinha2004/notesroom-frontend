@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import { GoogleLogin } from '@react-oauth/google';
 
-export default function Register() {
+export default function Register({ setIsLoggedIn }) {
   const [formData, setFormData] = useState({ 
     username: '', 
     email: '', 
@@ -61,6 +62,30 @@ export default function Register() {
       });
       setIsLoading(false); 
     } 
+  };
+
+  // Google Login/Register Handler
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setIsLoading(true);
+    setStatus({ type: '', message: '' });
+    
+    try {
+      const response = await authAPI.googleLogin(credentialResponse.credential);
+      localStorage.setItem('access_token', response.data.access);
+      localStorage.setItem('refresh_token', response.data.refresh);
+      
+      if (typeof setIsLoggedIn === 'function') {
+          setIsLoggedIn(true);
+      }
+      navigate('/'); 
+    } catch (err) {
+      setStatus({ 
+        type: 'error', 
+        message: 'Google authentication failed. Please try again.' 
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -207,6 +232,28 @@ export default function Register() {
             )}
           </button>
         </form>
+        
+        {/* Google Authentication Divider and Button */}
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white dark:bg-[#1e1f20] text-gray-500 font-medium">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setStatus({ type: 'error', message: 'Google Login Failed. Please try again.' })}
+              useOneTap
+              theme={document.documentElement.classList.contains('dark') ? 'filled_black' : 'outline'}
+              shape="pill"
+            />
+          </div>
+        </div>
         
         <p className="text-center text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-8 pt-6 border-t border-gray-100 dark:border-gray-800/50">
           Already have an account? <Link to="/login" className="font-bold text-blue-600 dark:text-blue-400 hover:text-blue-500 transition-colors">Log in here</Link>
