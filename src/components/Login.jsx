@@ -177,4 +177,3 @@ export default function Login({ setIsLoggedIn }) {
     </div>
   );
 }
-console.log("My Google Client ID is:", import.meta.env.VITE_GOOGLE_CLIENT_ID);
