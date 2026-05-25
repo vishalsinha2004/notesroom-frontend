@@ -5,8 +5,9 @@ import { authAPI } from '../services/api';
 import { GoogleLogin } from '@react-oauth/google';
 
 export default function Register({ setIsLoggedIn }) {
+  // 1. Removed 'username' from state, kept only 'name'
   const [formData, setFormData] = useState({ 
-    username: '', 
+    name: '', 
     email: '', 
     password: '', 
     confirmPassword: '' 
@@ -14,7 +15,6 @@ export default function Register({ setIsLoggedIn }) {
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isLoading, setIsLoading] = useState(false);
   
-  // Added states for showing passwords
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
@@ -47,24 +47,27 @@ export default function Register({ setIsLoggedIn }) {
     setStatus({ type: '', message: '' });
 
     try {
+      // 2. Removed 'username' from the payload sent to backend
       const submitData = {
-        username: formData.username,
+        name: formData.name, // Sends Real Name to Django
         email: formData.email,
         password: formData.password
       };
 
       await authAPI.register(submitData);
-      navigate('/verify', { state: { email: formData.email } });
+      
+      // Successfully navigates to verify email
+      navigate('/verify-email', { state: { email: formData.email } });
+      
     } catch (err) {
       setStatus({ 
         type: 'error', 
-        message: err.response?.data?.error || 'Registration failed. Username or email might already be taken.' 
+        message: err.response?.data?.error || 'Registration failed. Email might already be taken.' 
       });
       setIsLoading(false); 
     } 
   };
 
-  // Google Login/Register Handler
   const handleGoogleSuccess = async (credentialResponse) => {
     setIsLoading(true);
     setStatus({ type: '', message: '' });
@@ -89,13 +92,10 @@ export default function Register({ setIsLoggedIn }) {
   };
 
   return (
-    // Background matches the Dashboard/Profile exactly
     <div className="min-h-screen flex items-center justify-center bg-[#f0f4f9] dark:bg-[#131314] py-12 px-4 sm:px-6 lg:px-8 font-sans relative overflow-hidden transition-colors duration-300">
       
-      {/* Decorative Background Blob */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-indigo-500/10 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none opacity-70 md:opacity-100 transition-opacity"></div>
 
-      {/* Main Card - Slimmer padding on mobile, rounded like Profile panels */}
       <div className="max-w-md w-full bg-white dark:bg-[#1e1f20] p-6 md:p-10 rounded-[24px] shadow-sm md:shadow-xl border border-transparent dark:border-gray-800/30 relative z-10 animate-fade-in">
         
         <div className="text-center mb-8">
@@ -123,18 +123,20 @@ export default function Register({ setIsLoggedIn }) {
         <form className="space-y-5 md:space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             
-            {/* Username Input */}
+            {/* Full Name Input */}
             <div>
               <input 
                 type="text" 
-                placeholder="Username" 
-                value={formData.username} 
-                onChange={(e) => setFormData({...formData, username: e.target.value})} 
+                placeholder="Full Name" 
+                value={formData.name} 
+                onChange={(e) => setFormData({...formData, name: e.target.value})} 
                 required 
                 disabled={isLoading}
                 className="w-full bg-gray-100 dark:bg-[#131314] border border-transparent placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white rounded-xl px-4 py-3.5 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all disabled:opacity-50"
               />
             </div>
+
+            {/* 3. Removed the entire Username input block */}
 
             {/* Email Input */}
             <div>
@@ -149,7 +151,7 @@ export default function Register({ setIsLoggedIn }) {
               />
             </div>
             
-            {/* Password Input with Eye Toggle */}
+            {/* Password Input */}
             <div>
               <div className="relative">
                 <input 
@@ -183,7 +185,7 @@ export default function Register({ setIsLoggedIn }) {
               </p>
             </div>
 
-            {/* Confirm Password Input with Eye Toggle */}
+            {/* Confirm Password Input */}
             <div className="relative">
               <input 
                 type={showConfirmPassword ? "text" : "password"} 
@@ -233,7 +235,6 @@ export default function Register({ setIsLoggedIn }) {
           </button>
         </form>
         
-        {/* Google Authentication Divider and Button */}
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">

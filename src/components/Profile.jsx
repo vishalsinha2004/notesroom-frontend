@@ -6,22 +6,24 @@ import { authAPI } from '../services/api';
 export default function Profile({ setIsLoggedIn }) {
   const navigate = useNavigate();
   
-  // Data States
-  const [userData, setUserData] = useState({ username: 'Loading...', email: 'Loading...' });
+  // 1. Added profile_picture to the initial state
+  const [userData, setUserData] = useState({ username: 'Loading...', email: 'Loading...', profile_picture: null });
   const [expandedSection, setExpandedSection] = useState(null);
   
   // Interactive Settings States
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [language, setLanguage] = useState('English');
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'system');
-  const [aiEnabled, setAiEnabled] = useState(true); // Added state for AI feature toggle
+  const [aiEnabled, setAiEnabled] = useState(true); 
 
   useEffect(() => {
     authAPI.getProfile()
       .then(response => {
+        // 2. Save the fetched picture to state
         setUserData({
           username: response.data.username || 'User',
-          email: response.data.email || 'No email provided'
+          email: response.data.email || 'No email provided',
+          profile_picture: response.data.profile_picture || null
         });
       })
       .catch(err => {
@@ -48,10 +50,9 @@ export default function Profile({ setIsLoggedIn }) {
     return name.substring(0, 2).toUpperCase();
   };
 
-  // Functional Theme Handler
   const handleThemeSelect = (selectedTheme) => {
     setTheme(selectedTheme);
-    setExpandedSection(null); // Close accordion
+    setExpandedSection(null); 
 
     if (selectedTheme === 'system') {
       localStorage.removeItem('theme');
@@ -68,20 +69,18 @@ export default function Profile({ setIsLoggedIn }) {
         document.documentElement.classList.remove('dark');
       }
     }
-    
-    // Dispatch a custom event in case you have a global ThemeContext listening
     window.dispatchEvent(new Event('theme-changed'));
   };
 
   const handleLanguageSelect = (lang) => {
     setLanguage(lang);
-    setExpandedSection(null); // Close accordion after selection
+    setExpandedSection(null); 
   };
 
   return (
     <div className="min-h-screen bg-[#f0f4f9] dark:bg-[#131314] text-gray-900 dark:text-[#e3e3e3] transition-colors duration-300 pb-24 md:pb-12 font-sans">
       
-      {/* Navbar - Theme Toggle Removed */}
+      {/* Navbar */}
       <nav className="sticky top-0 z-40 bg-[#f0f4f9]/80 dark:bg-[#131314]/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800/30">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex justify-between h-14 md:h-18 items-center">
@@ -91,21 +90,25 @@ export default function Profile({ setIsLoggedIn }) {
                </button>
               <h1 className="text-lg md:text-xl font-semibold tracking-tight">Profile</h1>
             </div>
-            
-            {/* Empty right side placeholder if needed later */}
-            <div className="flex items-center gap-2 sm:gap-4 md:gap-6"></div>
           </div>
         </div>
       </nav>
 
-      {/* Main Container */}
       <main className="max-w-2xl mx-auto px-4 py-6 md:py-10 animate-fade-in">
         
         {/* User Header */}
         <div className="flex items-center gap-4 md:gap-6 mb-8 md:mb-10 bg-white dark:bg-[#1e1f20] p-4 md:p-6 rounded-[24px] shadow-sm border border-transparent dark:border-gray-800/30">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex shrink-0 items-center justify-center text-white text-2xl md:text-3xl font-bold border-2 border-white dark:border-[#303134]">
-            {getInitials(userData.username)}
+          
+          {/* 3. UPDATED AVATAR BOX: overflow-hidden added to keep the image perfectly round */}
+          <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex shrink-0 items-center justify-center text-white text-2xl md:text-3xl font-bold border-2 border-white dark:border-[#303134] overflow-hidden">
+            {userData.profile_picture ? (
+              /* Google Images REQUIRE referrerPolicy="no-referrer" to load properly! */
+              <img src={userData.profile_picture} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            ) : (
+              getInitials(userData.username)
+            )}
           </div>
+
           <div className="flex flex-col min-w-0">
             <h2 className="text-xl md:text-2xl font-semibold text-gray-900 dark:text-[#e3e3e3] capitalize truncate">
               {userData.username}
@@ -113,17 +116,15 @@ export default function Profile({ setIsLoggedIn }) {
             <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 truncate">
               {userData.email}
             </p>
-            <div className="mt-2 inline-flex">
-            </div>
           </div>
         </div>
 
+        {/* ... KEEP THE REST OF YOUR SETTINGS JSX EXACTLY THE SAME HERE ... */}
+        
         <h3 className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-2 md:mb-3 ml-2">Preferences</h3>
         
-        {/* Settings List */}
         <div className="bg-white dark:bg-[#1e1f20] rounded-[24px] shadow-sm border border-transparent dark:border-gray-800/30 overflow-hidden mb-6 md:mb-8">
           
-          {/* 1. Account Details */}
           <div className="border-b border-gray-100 dark:border-gray-800/50">
             <button onClick={() => toggleSection('account')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
               <div className="flex items-center gap-3 md:gap-4">
@@ -148,7 +149,6 @@ export default function Profile({ setIsLoggedIn }) {
             )}
           </div>
 
-          {/* 2. Appearance (Theme Select) */}
           <div className="border-b border-gray-100 dark:border-gray-800/50">
             <button onClick={() => toggleSection('theme')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
               <div className="flex items-center gap-3 md:gap-4">
@@ -175,7 +175,6 @@ export default function Profile({ setIsLoggedIn }) {
             )}
           </div>
 
-          {/* 3. Notifications */}
           <div className="border-b border-gray-100 dark:border-gray-800/50">
             <button onClick={() => toggleSection('notifications')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
               <div className="flex items-center gap-3 md:gap-4">
@@ -202,7 +201,6 @@ export default function Profile({ setIsLoggedIn }) {
             )}
           </div>
           
-          {/* 4. Language Select */}
           <div className="border-b border-gray-100 dark:border-gray-800/50">
             <button onClick={() => toggleSection('language')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
               <div className="flex items-center gap-3 md:gap-4">
@@ -229,7 +227,6 @@ export default function Profile({ setIsLoggedIn }) {
             )}
           </div>
 
-          {/* 5. Notesroom AI */}
           <div className="border-b border-transparent">
             <button onClick={() => toggleSection('ai')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
               <div className="flex items-center gap-3 md:gap-4">
@@ -242,8 +239,6 @@ export default function Profile({ setIsLoggedIn }) {
             </button>
             {expandedSection === 'ai' && (
               <div className="px-5 py-4 md:py-6 bg-gray-50/50 dark:bg-[#131314]/50 border-t border-gray-100 dark:border-gray-800/50 flex flex-col gap-4">
-                
-                
                 <button 
                   onClick={() => navigate('/ai')} 
                   className="w-full py-2.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
@@ -257,10 +252,8 @@ export default function Profile({ setIsLoggedIn }) {
 
         <h3 className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-2 md:mb-3 ml-2">Support</h3>
 
-        {/* Support & About Info List */}
         <div className="bg-white dark:bg-[#1e1f20] rounded-[24px] shadow-sm border border-transparent dark:border-gray-800/30 overflow-hidden mb-8 md:mb-10">
           
-          {/* Help & Support */}
           <div className="border-b border-gray-100 dark:border-gray-800/50">
             <button onClick={() => toggleSection('help')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
               <div className="flex items-center gap-3 md:gap-4">
@@ -281,7 +274,6 @@ export default function Profile({ setIsLoggedIn }) {
             )}
           </div>
 
-          {/* About Notesroom */}
           <div>
             <button onClick={() => toggleSection('about')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
               <div className="flex items-center gap-3 md:gap-4">
@@ -311,7 +303,6 @@ export default function Profile({ setIsLoggedIn }) {
           </div>
         </div>
 
-        {/* Log Out Button */}
         <button 
           onClick={handleLogout}
           className="w-full px-5 py-4 md:py-5 bg-white dark:bg-[#1e1f20] rounded-[24px] shadow-sm border border-transparent dark:border-gray-800/30 flex items-center justify-center gap-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 transition-colors group"

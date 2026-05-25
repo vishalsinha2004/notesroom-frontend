@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 
-export default function VerifyEmail() {
+// --- ADDED setIsLoggedIn prop here ---
+export default function VerifyEmail({ setIsLoggedIn }) {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
@@ -30,10 +31,8 @@ export default function VerifyEmail() {
     return <Navigate to="/login" />;
   }
 
-  // Custom Toast Trigger Function
   const showToastMsg = (message) => {
     setToast({ show: true, message });
-    // Hide toast after 3 seconds
     setTimeout(() => setToast({ show: false, message: '' }), 3000);
   };
 
@@ -43,19 +42,30 @@ export default function VerifyEmail() {
     setError('');
 
     try {
-      await authAPI.verify(email, code);
+      // 1. Wait for the API response
+      const response = await authAPI.verify(email, code);
       
-      // Trigger the beautiful on-screen toast instead of the ugly browser alert
-      showToastMsg('Verification successful! Redirecting...');
+      // 2. Store the tokens that the updated Django view sent us
+      if (response.data.access && response.data.refresh) {
+        localStorage.setItem('access_token', response.data.access);
+        localStorage.setItem('refresh_token', response.data.refresh);
+      }
       
-      // Delay navigation slightly so the user can see the success message
+      showToastMsg('Verification successful! Logging you in...');
+      
+      // 3. Update Global Auth State
+      if (typeof setIsLoggedIn === 'function') {
+         setIsLoggedIn(true);
+      }
+      
+      // 4. Redirect DIRECTLY to Dashboard instead of Login
       setTimeout(() => {
-        navigate('/login'); 
+        navigate('/dashboard'); 
       }, 1500);
       
     } catch (err) {
       setError(err.response?.data?.error || 'Verification failed. Please check your code.');
-      setIsVerifying(false); // Only stop loading if there's an error
+      setIsVerifying(false); 
     }
   };
 
@@ -66,7 +76,6 @@ export default function VerifyEmail() {
     try {
       await authAPI.resendOtp(email);
       setTimeLeft(60);
-      // Trigger the toast for the resend action
       showToastMsg('A new code has been sent to your email.');
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to resend code. Please try again.');
@@ -82,10 +91,9 @@ export default function VerifyEmail() {
   };
 
   return (
-    // Background matches the Dashboard/Profile/Login exactly
+    // ... KEEP THE REST OF YOUR VERIFY EMAIL UI JSX EXACTLY THE SAME ...
     <div className="min-h-screen flex items-center justify-center bg-[#f0f4f9] dark:bg-[#131314] py-12 px-4 sm:px-6 lg:px-8 font-sans relative overflow-hidden transition-colors duration-300">
       
-      {/* PROFESSIONAL TOAST NOTIFICATION UI */}
       {toast.show && (
         <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 bg-gray-900 dark:bg-[#e3e3e3] text-white dark:text-gray-900 px-5 py-3 rounded-full shadow-lg z-50 animate-slide-in-up text-sm font-medium flex items-center gap-2">
           <span>✅</span> 
@@ -93,10 +101,8 @@ export default function VerifyEmail() {
         </div>
       )}
 
-      {/* Decorative Background Blob - Scaled appropriately */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-blue-500/10 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none opacity-70 md:opacity-100 transition-opacity"></div>
 
-      {/* Main Card - Slimmer padding on mobile, rounded like Profile panels */}
       <div className="max-w-md w-full bg-white dark:bg-[#1e1f20] p-6 md:p-10 rounded-[24px] shadow-sm md:shadow-xl border border-transparent dark:border-gray-800/30 text-center relative z-10 animate-fade-in">
         
         <div className="mb-8">

@@ -21,8 +21,9 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
 
-  // State for dynamic profile initials
+  // State for dynamic profile initials and picture
   const [username, setUsername] = useState('');
+  const [profilePicture, setProfilePicture] = useState(null); // <--- NEW: State for picture
 
   // State for FAQ accordion
   const [openFaq, setOpenFaq] = useState(null);
@@ -41,6 +42,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
       authAPI.getProfile()
         .then(response => {
           setUsername(response.data.username || 'User');
+          setProfilePicture(response.data.profile_picture || null); // <--- NEW: Save the picture!
         })
         .catch(err => {
           console.error("Failed to fetch profile for navbar", err);
@@ -174,23 +176,15 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
   ];
 
   const FolderSkeleton = () => (
-    // Changed: min-h, rounded borders, and padding adjusted to perfectly match the real cards on mobile
     <div className="bg-white/50 dark:bg-[#1e1f20]/50 backdrop-blur-xl p-4 md:p-6 rounded-[20px] md:rounded-3xl shadow-sm border border-gray-100/50 dark:border-gray-800/40 flex flex-col min-h-[140px] md:min-h-[180px] animate-pulse">
-      
-      {/* Top Row: Icon and Arrow placeholders */}
       <div className="flex justify-between items-start w-full">
         <div className="w-12 h-12 md:w-14 md:h-14 bg-gray-200 dark:bg-gray-700/50 rounded-2xl shrink-0"></div>
         <div className="w-8 h-8 bg-gray-100 dark:bg-gray-800/50 rounded-full shrink-0"></div>
       </div>
-      
-      {/* Bottom Row: Text placeholders */}
       <div className="mt-auto pt-4 space-y-2 md:space-y-3">
-        {/* Title placeholder */}
         <div className="h-4 md:h-5 bg-gray-200 dark:bg-gray-700/50 rounded-lg w-3/4"></div>
-        {/* Subtitle placeholder */}
         <div className="h-3 md:h-3.5 bg-gray-100 dark:bg-gray-800/60 rounded-lg w-2/5"></div>
       </div>
-      
     </div>
   );
 
@@ -235,12 +229,22 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                     </button>
                   </div>
 
+                  {/* UPDATED: Profile Button with perfectly rounded image rendering */}
                   <button
                     onClick={() => navigate('/profile')}
-                    className=" flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold hover:scale-105 transition-transform shadow-sm"
+                    className="flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold hover:scale-105 transition-transform shadow-sm overflow-hidden"
                     title="Profile"
                   >
-                    {getInitials(username)}
+                    {profilePicture ? (
+                      <img 
+                        src={profilePicture} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover" 
+                        referrerPolicy="no-referrer" 
+                      />
+                    ) : (
+                      getInitials(username)
+                    )}
                   </button>
                 </>
               ) : (
@@ -321,7 +325,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
         </div>
 
         {isLoading ? (
-          // Changed: grid-cols-1 to grid-cols-2, and matched the gaps to your live data grid
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
             {[...Array(8)].map((_, i) => <FolderSkeleton key={i} />)}
           </div>
@@ -337,7 +340,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       setSelectedSemester(sem);
                       setCurrentView('subjects');
                     })}
-                    // CHANGED: Converted to a tall, vertical flexbox with a minimum height to match documents
                     className="group bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-xl p-4 md:p-6 rounded-[20px] md:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800/60 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-blue-900/10 transition-all duration-300 cursor-pointer flex flex-col gap-3 md:gap-4 min-h-[140px] md:min-h-[180px] relative overflow-hidden"
                   >
                     {/* Top Row: Icon + Arrow */}
@@ -352,7 +354,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       </div>
                     </div>
 
-                    {/* Bottom Row: Text (Pushed to bottom using mt-auto) */}
+                    {/* Bottom Row: Text */}
                     <div className="mt-auto">
                       <h3 className="font-bold text-gray-900 dark:text-[#e3e3e3] text-sm md:text-lg transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">{sem.name}</h3>
                       <p className="text-[11px] md:text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">{sem.subjects.length} Subjects</p>
@@ -372,7 +374,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       setSelectedSubject(sub);
                       setCurrentView('documents');
                     })}
-                    // CHANGED: Converted to a tall, vertical flexbox with a minimum height to match documents
                     className="group bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-xl p-4 md:p-6 rounded-[20px] md:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800/60 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-purple-900/10 transition-all duration-300 cursor-pointer flex flex-col gap-3 md:gap-4 min-h-[140px] md:min-h-[180px] relative overflow-hidden"
                   >
                     {/* Top Row: Icon + Arrow */}
@@ -387,7 +388,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       </div>
                     </div>
 
-                    {/* Bottom Row: Text (Pushed to bottom using mt-auto) */}
+                    {/* Bottom Row: Text */}
                     <div className="mt-auto">
                       <h3 className="font-bold text-gray-900 dark:text-[#e3e3e3] text-sm md:text-lg transition-colors group-hover:text-purple-600 dark:group-hover:text-purple-400 line-clamp-2">{sub.name}</h3>
                       <p className="text-[11px] md:text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">{sub.documents.length} Documents</p>
@@ -397,7 +398,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
               </div>
             )}
 
-            {/* VIEW 3: DOCUMENTS */}
             {/* VIEW 3: DOCUMENTS */}
             {currentView === 'documents' && selectedSubject && (
               <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
