@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { GoogleLogin } from '@react-oauth/google';
+import logo from '../assets/logo.png';
 
 export default function Login({ setIsLoggedIn }) {
   const [username, setUsername] = useState('');
@@ -65,14 +66,20 @@ export default function Login({ setIsLoggedIn }) {
       <div className="max-w-md w-full bg-white dark:bg-[#1e1f20] p-6 md:p-10 rounded-[24px] shadow-sm md:shadow-xl border border-transparent dark:border-gray-800/30 relative z-10 animate-fade-in">
         
         <div className="text-center mb-8">
-          <div className="mx-auto w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 mb-5 md:mb-6">
-            <span className="font-bold text-2xl md:text-3xl">N</span>
+          {/* UPDATED LOGO SECTION */}
+          <div className="mx-auto w-16 h-16 md:w-20 md:h-20 mb-5 md:mb-6 flex items-center justify-center">
+            <img 
+              src={logo} 
+              alt="Notesroom Logo" 
+              className="w-full h-full object-contain" 
+            />
           </div>
+          
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-[#e3e3e3] tracking-tight">
             Welcome Back
           </h2>
           <p className="mt-2 text-xs md:text-sm text-gray-500 dark:text-gray-400 font-medium">
-            Sign in to access your classroom
+            Sign in to access your Notesroom
           </p>
         </div>
         

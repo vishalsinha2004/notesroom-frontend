@@ -6,6 +6,7 @@ import ChatModal from './ChatModal';
 import PdfModal from './PdfModal';
 import FloatingChatbot from './FloatingChatbot';
 import ThemeToggle from './ThemeToggle';
+import logo from '../assets/logo.png';
 
 export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
   const navigate = useNavigate();
@@ -23,7 +24,9 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
 
   // State for dynamic profile initials and picture
   const [username, setUsername] = useState('');
-  const [profilePicture, setProfilePicture] = useState(null); // <--- NEW: State for picture
+  const [profilePicture, setProfilePicture] = useState(null);
+  // NEW: State specifically for the navbar profile loading skeleton
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
 
   // State for FAQ accordion
   const [openFaq, setOpenFaq] = useState(null);
@@ -39,14 +42,20 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
   // Fetch the real user data for the Profile Icon
   useEffect(() => {
     if (isLoggedIn) {
+      setIsProfileLoading(true); // Start loading
       authAPI.getProfile()
         .then(response => {
           setUsername(response.data.username || 'User');
-          setProfilePicture(response.data.profile_picture || null); // <--- NEW: Save the picture!
+          setProfilePicture(response.data.profile_picture || null); 
         })
         .catch(err => {
           console.error("Failed to fetch profile for navbar", err);
+        })
+        .finally(() => {
+          setIsProfileLoading(false); // Stop loading regardless of success/fail
         });
+    } else {
+      setIsProfileLoading(false); // Not logged in, so nothing to load
     }
   }, [isLoggedIn]);
 
@@ -198,12 +207,18 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
       )}
 
       {/* NAVBAR */}
-      <nav className="sticky top-0 z-40 bg-[#f0f4f9]/80 dark:bg-[#131314]/80 backdrop-blur-xl border-b border-transparent dark:border-gray-800/30">
+     <nav className="sticky top-0 z-40 bg-[#f0f4f9]/80 dark:bg-[#131314]/80 backdrop-blur-xl border-b border-transparent dark:border-gray-800/30">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex justify-between h-14 md:h-18 items-center">
+            
+            {/* UPDATED LOGO SECTION */}
             <div className="flex items-center gap-2 md:gap-3">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-sm">
-                <span className="font-bold text-sm md:text-base">N</span>
+              <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center shrink-0">
+                <img 
+                  src={logo} 
+                  alt="Notesroom Logo" 
+                  className="w-full h-full object-contain" 
+                />
               </div>
               <h1 className="text-lg md:text-xl font-semibold tracking-tight hidden sm:block">
                 Notesroom
@@ -211,7 +226,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
             </div>
 
             <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-
               {isLoggedIn ? (
                 <>
                   <div className="hidden md:flex items-center gap-6 mr-2">
@@ -229,13 +243,17 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                     </button>
                   </div>
 
-                  {/* UPDATED: Profile Button with perfectly rounded image rendering */}
+                  {/* NAVBAR PROFILE SKELETON */}
                   <button
                     onClick={() => navigate('/profile')}
                     className="flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold hover:scale-105 transition-transform shadow-sm overflow-hidden"
                     title="Profile"
                   >
-                    {profilePicture ? (
+                    {isProfileLoading ? (
+                      // Skeleton loader inside the button
+                      <div className="w-full h-full bg-gray-300 dark:bg-gray-700/80 animate-pulse"></div>
+                    ) : profilePicture ? (
+                      // Real image
                       <img 
                         src={profilePicture} 
                         alt="Profile" 
@@ -243,6 +261,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                         referrerPolicy="no-referrer" 
                       />
                     ) : (
+                      // Fallback initials
                       getInitials(username)
                     )}
                   </button>
@@ -255,8 +274,8 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                   Log In
                 </button>
               )}
-
             </div>
+            
           </div>
         </div>
       </nav>
@@ -414,7 +433,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                         <div className="relative flex items-center justify-center">
                           <svg
                             className="w-3 h-3 md:w-4 md:h-4 animate-[spin_4s_linear_infinite]"
-                            viewBox="0 0 24 24"
+                            viewBox="0 0 24 24"W
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
                           >

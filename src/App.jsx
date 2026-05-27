@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import axios from 'axios'; // 1. Import axios for pinging
+import axios from 'axios';
 import Login from './components/Login';
 import Register from './components/Register';
 import VerifyEmail from './components/VerifyEmail';
@@ -10,13 +10,16 @@ import { ThemeProvider } from './context/ThemeContext';
 import MobileNavbar from './components/MobileNavbar';
 import Search from './components/Search';
 import FloatingChatbot from './components/FloatingChatbot';
-import SplashScreen from './components/SplashScreen'; // 2. Import your new SplashScreen
+import SplashScreen from './components/SplashScreen'; 
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 3. Check sessionStorage to see if we already woke the server up
+  // NEW: Global Language State initialized from localStorage
+  const [language, setLanguage] = useState(localStorage.getItem('language') || 'English');
+
+  // Check sessionStorage to see if we already woke the server up
   const [isServerAwake, setIsServerAwake] = useState(() => {
     return sessionStorage.getItem('serverAwake') === 'true';
   });
@@ -28,7 +31,7 @@ function App() {
     setIsLoading(false);
   }, []);
 
-  // 4. Logic to ping the backend server and wake it up
+  // Logic to ping the backend server and wake it up
   useEffect(() => {
     // If the server is already marked as awake, skip pinging
     if (isServerAwake) return;
@@ -67,7 +70,7 @@ function App() {
 
   return (
     <ThemeProvider>
-      {/* 5. Show Splash Screen if sleeping, otherwise show the App */}
+      {/* Show Splash Screen if sleeping, otherwise show the App */}
       {!isServerAwake ? (
         <SplashScreen />
       ) : (
@@ -78,9 +81,10 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               
-              <Route path="/dashboard" element={<Dashboard isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
+              {/* UPDATED: Passing language props down to Dashboard and Profile */}
+              <Route path="/dashboard" element={<Dashboard isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} language={language} />} />
               <Route path="/ai" element={isLoggedIn ? <FloatingChatbot /> : <Navigate to="/login" />} />
-              <Route path="/profile" element={isLoggedIn ? <Profile setIsLoggedIn={setIsLoggedIn} /> : <Navigate to="/login" />} />
+              <Route path="/profile" element={isLoggedIn ? <Profile setIsLoggedIn={setIsLoggedIn} language={language} setLanguage={setLanguage} /> : <Navigate to="/login" />} />
               
               <Route path="/" element={<Navigate to="/dashboard" />} />
               <Route path="*" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} />} />
