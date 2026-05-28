@@ -8,6 +8,8 @@ import FloatingChatbot from './FloatingChatbot';
 import ThemeToggle from './ThemeToggle';
 import logo from '../assets/logo.png';
 import { translations } from '../utils/translations'; // 1. Import the dictionary
+// Import Helmet for dynamic SEO
+import { Helmet } from 'react-helmet-async';
 
 // 2. Accept the language prop
 export default function Dashboard({ isLoggedIn, setIsLoggedIn, language }) {
@@ -201,6 +203,12 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn, language }) {
   return (
     <div className="min-h-screen bg-[#f0f4f9] dark:bg-[#131314] text-gray-900 dark:text-[#e3e3e3] transition-colors duration-300 font-sans relative pb-20 md:pb-8">
 
+      {/* Add the Helmet SEO data for the Dashboard/Home Page */}
+      <Helmet>
+        <title>Notesroom | Your Digital Study Space</title>
+        <meta name="description" content="Notesroom is a platform for students to securely store, organize, and search for documents, notes, and coursework." />
+      </Helmet>
+
       {toastMessage && (
         <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 bg-gray-900 dark:bg-[#e3e3e3] text-white dark:text-gray-900 px-5 py-3 rounded-full shadow-lg z-50 animate-slide-in-up text-sm font-medium flex items-center gap-2">
           <span>✅</span> {toastMessage}
@@ -208,7 +216,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn, language }) {
       )}
 
       {/* NAVBAR */}
-     <nav className="sticky top-0 z-40 bg-[#f0f4f9]/80 dark:bg-[#131314]/80 backdrop-blur-xl border-b border-transparent dark:border-gray-800/30">
+      <nav className="sticky top-0 z-40 bg-[#f0f4f9]/80 dark:bg-[#131314]/80 backdrop-blur-xl border-b border-transparent dark:border-gray-800/30">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex justify-between h-14 md:h-18 items-center">
             

@@ -5,6 +5,8 @@ import { documentAPI } from '../services/api';
 import ChatModal from './ChatModal';
 import PdfModal from './PdfModal';
 import ThemeToggle from './ThemeToggle';
+// 1. Import Helmet for dynamic SEO
+import { Helmet } from 'react-helmet-async';
 
 export default function Search({ isLoggedIn }) {
   const navigate = useNavigate();
@@ -115,6 +117,12 @@ export default function Search({ isLoggedIn }) {
   return (
     <div className="min-h-screen bg-[#f0f4f9] dark:bg-[#131314] text-gray-900 dark:text-[#e3e3e3] transition-colors duration-300 font-sans relative pb-20 md:pb-8">
 
+      {/* 2. Add the Helmet SEO data for the Search Page */}
+      <Helmet>
+        <title>Search Documents | Notesroom</title>
+        <meta name="description" content="Search through thousands of notes, documents, and coursework materials shared by the Notesroom community." />
+      </Helmet>
+
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 bg-gray-900 dark:bg-[#e3e3e3] text-white dark:text-gray-900 px-5 py-3 rounded-full shadow-lg z-50 animate-slide-in-up text-sm font-medium flex items-center gap-2">
@@ -132,8 +140,6 @@ export default function Search({ isLoggedIn }) {
               </button>
               <h1 className="text-lg md:text-xl font-semibold tracking-tight">Search Notes</h1>
             </div>
-
-
           </div>
         </div>
       </nav>
