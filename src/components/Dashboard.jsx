@@ -7,9 +7,14 @@ import PdfModal from './PdfModal';
 import FloatingChatbot from './FloatingChatbot';
 import ThemeToggle from './ThemeToggle';
 import logo from '../assets/logo.png';
+import { translations } from '../utils/translations'; // 1. Import the dictionary
 
-export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
+// 2. Accept the language prop
+export default function Dashboard({ isLoggedIn, setIsLoggedIn, language }) {
   const navigate = useNavigate();
+  
+  // 3. Get the correct language object, fallback to English
+  const t = translations[language] || translations['English'];
 
   const [semesters, setSemesters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -22,13 +27,10 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [selectedSubject, setSelectedSubject] = useState(null);
 
-  // State for dynamic profile initials and picture
   const [username, setUsername] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
-  // NEW: State specifically for the navbar profile loading skeleton
   const [isProfileLoading, setIsProfileLoading] = useState(true);
 
-  // State for FAQ accordion
   const [openFaq, setOpenFaq] = useState(null);
 
   const handleProtectedAction = (action) => {
@@ -39,10 +41,9 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
     }
   };
 
-  // Fetch the real user data for the Profile Icon
   useEffect(() => {
     if (isLoggedIn) {
-      setIsProfileLoading(true); // Start loading
+      setIsProfileLoading(true);
       authAPI.getProfile()
         .then(response => {
           setUsername(response.data.username || 'User');
@@ -52,10 +53,10 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
           console.error("Failed to fetch profile for navbar", err);
         })
         .finally(() => {
-          setIsProfileLoading(false); // Stop loading regardless of success/fail
+          setIsProfileLoading(false);
         });
     } else {
-      setIsProfileLoading(false); // Not logged in, so nothing to load
+      setIsProfileLoading(false);
     }
   }, [isLoggedIn]);
 
@@ -125,59 +126,59 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
     setOpenFaq(openFaq === index ? null : index);
   };
 
-  // ----------------------------------------------------------------------
-  // EXPANDED FAQ DATA WITH INLINE JSX FOR ACTION LINKS
-  // ----------------------------------------------------------------------
+  // UPDATED FAQ DATA: To properly translate this, we should really move these strings to translations.js.
+  // For now, I have replaced the hardcoded strings with a fallback to English if not defined in the dictionary.
+  // NOTE: You will need to add these specific FAQ keys to your translations.js file!
   const faqs = [
     {
-      question: "How do I find and view documents?",
+      question: t.faq1Q || "How do I find and view documents?",
       answer: (
         <div className="space-y-3">
-          <p>Navigating Notesroom is designed to be effortless. You can browse manually by clicking through your specific Semester and Subject folders directly from this dashboard. Once you locate the desired file, you can instantly view it in our seamless PDF reader or download it to your device for offline studying.</p>
-          <p>If you know exactly what you are looking for, we recommend using our lightning-fast global search function to jump straight to your notes without clicking through folders.</p>
+          <p>{t.faq1A1 || "Navigating Notesroom is designed to be effortless. You can browse manually by clicking through your specific Semester and Subject folders directly from this dashboard. Once you locate the desired file, you can instantly view it in our seamless PDF reader or download it to your device for offline studying."}</p>
+          <p>{t.faq1A2 || "If you know exactly what you are looking for, we recommend using our lightning-fast global search function to jump straight to your notes without clicking through folders."}</p>
           <button onClick={() => handleProtectedAction(() => navigate('/search'))} className="text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1.5 mt-2 transition-colors">
-            Go to Search Page <span aria-hidden="true">&rarr;</span>
+            {t.goSearch || "Go to Search Page"} <span aria-hidden="true">&rarr;</span>
           </button>
         </div>
       )
     },
     {
-      question: "How does the AI Chat assistant work?",
+      question: t.faq2Q || "How does the AI Chat assistant work?",
       answer: (
         <div className="space-y-3">
-          <p>Our intelligent AI assistant transforms how you interact with your study materials. By clicking the <strong>'✨ AI'</strong> button on any document, our system instantly reads and comprehends the entire PDF text.</p>
-          <p>You can ask the AI to summarize complex topics, explain difficult formulas, extract key bullet points, or even generate practice quiz questions based strictly on the document's content. It's like having a personal tutor available 24/7 directly inside your classroom.</p>
+          <p>{t.faq2A1 || "Our intelligent AI assistant transforms how you interact with your study materials. By clicking the '✨ AI' button on any document, our system instantly reads and comprehends the entire PDF text."}</p>
+          <p>{t.faq2A2 || "You can ask the AI to summarize complex topics, explain difficult formulas, extract key bullet points, or even generate practice quiz questions based strictly on the document's content. It's like having a personal tutor available 24/7 directly inside your classroom."}</p>
           <button onClick={() => handleProtectedAction(() => navigate('/ai'))} className="text-purple-600 dark:text-purple-400 font-bold hover:underline flex items-center gap-1.5 mt-2 transition-colors">
-            Try AI Chat Now <span aria-hidden="true">&rarr;</span>
+            {t.tryAi || "Try AI Chat Now"} <span aria-hidden="true">&rarr;</span>
           </button>
         </div>
       )
     },
     {
-      question: "How do I create an account or log in?",
+      question: t.faq3Q || "How do I create an account or log in?",
       answer: (
         <div className="space-y-3">
-          <p>Creating an account unlocks the full potential of Notesroom, giving you unrestricted access to viewing, downloading, and chatting with our curated documents. The registration process is completely secure and takes less than a minute.</p>
-          <p>You simply need to provide a username, a valid email address, and a strong password. We will send a secure 6-digit verification code to your email to confirm your identity. If you already have an account, just sign in!</p>
+          <p>{t.faq3A1 || "Creating an account unlocks the full potential of Notesroom, giving you unrestricted access to viewing, downloading, and chatting with our curated documents. The registration process is completely secure and takes less than a minute."}</p>
+          <p>{t.faq3A2 || "You simply need to provide a username, a valid email address, and a strong password. We will send a secure 6-digit verification code to your email to confirm your identity. If you already have an account, just sign in!"}</p>
           <div className="flex flex-wrap gap-4 mt-3">
             <button onClick={() => navigate('/register')} className="text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1.5 transition-colors">
-              Sign Up for Free <span aria-hidden="true">&rarr;</span>
+              {t.signUpFree || "Sign Up for Free"} <span aria-hidden="true">&rarr;</span>
             </button>
             <button onClick={() => navigate('/login')} className="text-gray-600 dark:text-gray-300 font-bold hover:text-gray-900 dark:hover:text-white hover:underline flex items-center gap-1.5 transition-colors">
-              Log In to Account <span aria-hidden="true">&rarr;</span>
+              {t.logInAccount || "Log In to Account"} <span aria-hidden="true">&rarr;</span>
             </button>
           </div>
         </div>
       )
     },
     {
-      question: "Where can I manage my account and app preferences?",
+      question: t.faq4Q || "Where can I manage my account and app preferences?",
       answer: (
         <div className="space-y-3">
-          <p>Your profile acts as your central command center. Here, you can review your account details, verify your active subscription tier, and customize your application experience entirely to your liking.</p>
-          <p>You have full control over preferences, including toggling Dark Mode for comfortable late-night studying, turning email alerts on or off, and selecting your preferred display language (English, Hindi, or Gujarati).</p>
+          <p>{t.faq4A1 || "Your profile acts as your central command center. Here, you can review your account details, verify your active subscription tier, and customize your application experience entirely to your liking."}</p>
+          <p>{t.faq4A2 || "You have full control over preferences, including toggling Dark Mode for comfortable late-night studying, turning email alerts on or off, and selecting your preferred display language."}</p>
           <button onClick={() => handleProtectedAction(() => navigate('/profile'))} className="text-indigo-600 dark:text-indigo-400 font-bold hover:underline flex items-center gap-1.5 mt-2 transition-colors">
-            Open Profile Settings <span aria-hidden="true">&rarr;</span>
+            {t.openProfile || "Open Profile Settings"} <span aria-hidden="true">&rarr;</span>
           </button>
         </div>
       )
@@ -211,7 +212,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex justify-between h-14 md:h-18 items-center">
             
-            {/* UPDATED LOGO SECTION */}
             <div className="flex items-center gap-2 md:gap-3">
               <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center shrink-0">
                 <img 
@@ -233,27 +233,24 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       onClick={() => navigate('/search')}
                       className="text-[15px] font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                     >
-                      Search
+                      {t.search} {/* Translated */}
                     </button>
                     <button
                       onClick={() => navigate('/profile')}
                       className="text-[15px] font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                     >
-                      Profile
+                      {t.profile} {/* Translated */}
                     </button>
                   </div>
 
-                  {/* NAVBAR PROFILE SKELETON */}
                   <button
                     onClick={() => navigate('/profile')}
                     className="flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full text-xs font-bold hover:scale-105 transition-transform shadow-sm overflow-hidden"
-                    title="Profile"
+                    title={t.profile}
                   >
                     {isProfileLoading ? (
-                      // Skeleton loader inside the button
                       <div className="w-full h-full bg-gray-300 dark:bg-gray-700/80 animate-pulse"></div>
                     ) : profilePicture ? (
-                      // Real image
                       <img 
                         src={profilePicture} 
                         alt="Profile" 
@@ -261,7 +258,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                         referrerPolicy="no-referrer" 
                       />
                     ) : (
-                      // Fallback initials
                       getInitials(username)
                     )}
                   </button>
@@ -271,7 +267,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                   onClick={() => navigate('/login')}
                   className="text-xs md:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 md:px-5 md:py-2.5 rounded-full transition-colors shadow-sm"
                 >
-                  Log In
+                  {t.logIn} {/* Translated */}
                 </button>
               )}
             </div>
@@ -288,17 +284,15 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
           <div className="mb-6 md:mb-8 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-2xl p-4 md:p-6 flex items-center gap-3 md:gap-5 shadow-sm">
             <div className="text-2xl md:text-4xl shrink-0">👋</div>
             <div>
-              <h2 className="text-sm md:text-base lg:text-lg font-semibold text-gray-900 dark:text-[#e3e3e3]">Log in to unlock features</h2>
-              <p className="text-[11px] md:text-xs lg:text-sm text-gray-600 dark:text-gray-400 mt-0.5 md:mt-1">View, download, and ask AI about documents.</p>
+              <h2 className="text-sm md:text-base lg:text-lg font-semibold text-gray-900 dark:text-[#e3e3e3]">{t.guestTitle}</h2> {/* Translated */}
+              <p className="text-[11px] md:text-xs lg:text-sm text-gray-600 dark:text-gray-400 mt-0.5 md:mt-1">{t.guestSubtitle}</p> {/* Translated */}
             </div>
           </div>
         )}
 
         {/* BREADCRUMBS */}
-        {/* MODERN GLASSY BREADCRUMBS */}
         <div className="inline-flex items-center p-1.5 bg-white/60 dark:bg-[#1e1f20]/60 backdrop-blur-xl rounded-full border border-gray-200/50 dark:border-gray-800/50 shadow-sm mb-6 md:mb-8 max-w-full overflow-x-auto custom-scrollbar">
           
-          {/* Root / All Semesters */}
           <button
             onClick={() => setCurrentView('semesters')}
             className={`flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-[11px] md:text-sm font-bold transition-all duration-300 whitespace-nowrap shrink-0 ${
@@ -308,10 +302,9 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
             }`}
           >
             <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-            Semesters
+            {t.semesters} {/* Translated */}
           </button>
 
-          {/* Semester Level */}
           {selectedSemester && currentView !== 'semesters' && (
             <>
               <div className="px-1 md:px-2 text-gray-300 dark:text-gray-700 shrink-0">
@@ -330,7 +323,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
             </>
           )}
 
-          {/* Subject Level */}
           {selectedSubject && currentView === 'documents' && (
             <>
               <div className="px-1 md:px-2 text-gray-300 dark:text-gray-700 shrink-0">
@@ -361,7 +353,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                     })}
                     className="group bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-xl p-4 md:p-6 rounded-[20px] md:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800/60 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-blue-900/10 transition-all duration-300 cursor-pointer flex flex-col gap-3 md:gap-4 min-h-[140px] md:min-h-[180px] relative overflow-hidden"
                   >
-                    {/* Top Row: Icon + Arrow */}
                     <div className="flex justify-between items-start w-full">
                       <div className="w-12 h-12 md:w-14 md:h-14 flex shrink-0 items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl shadow-md shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
                         <svg className="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -373,10 +364,9 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       </div>
                     </div>
 
-                    {/* Bottom Row: Text */}
                     <div className="mt-auto">
                       <h3 className="font-bold text-gray-900 dark:text-[#e3e3e3] text-sm md:text-lg transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">{sem.name}</h3>
-                      <p className="text-[11px] md:text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">{sem.subjects.length} Subjects</p>
+                      <p className="text-[11px] md:text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">{sem.subjects.length} {t.subjects}</p> {/* Translated */}
                     </div>
                   </div>
                 ))}
@@ -395,7 +385,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                     })}
                     className="group bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-xl p-4 md:p-6 rounded-[20px] md:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800/60 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-purple-900/10 transition-all duration-300 cursor-pointer flex flex-col gap-3 md:gap-4 min-h-[140px] md:min-h-[180px] relative overflow-hidden"
                   >
-                    {/* Top Row: Icon + Arrow */}
                     <div className="flex justify-between items-start w-full">
                       <div className="w-12 h-12 md:w-14 md:h-14 flex shrink-0 items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-2xl shadow-md shadow-purple-500/20 group-hover:scale-110 transition-transform duration-300">
                         <svg className="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -407,10 +396,9 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       </div>
                     </div>
 
-                    {/* Bottom Row: Text */}
                     <div className="mt-auto">
                       <h3 className="font-bold text-gray-900 dark:text-[#e3e3e3] text-sm md:text-lg transition-colors group-hover:text-purple-600 dark:group-hover:text-purple-400 line-clamp-2">{sub.name}</h3>
-                      <p className="text-[11px] md:text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">{sub.documents.length} Documents</p>
+                      <p className="text-[11px] md:text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">{sub.documents.length} {t.documents}</p> {/* Translated */}
                     </div>
                   </div>
                 ))}
@@ -423,7 +411,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                 {selectedSubject.documents.map(doc => (
                   <div key={doc.id} className="group relative bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-xl rounded-[20px] md:rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800/60 p-3 md:p-5 flex flex-col hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-red-900/10 transition-all duration-300 min-h-[160px] md:min-h-[190px]">
 
-                    {/* Absolute Positioned AI Button (Top Right) */}
                     <div className="absolute top-3 right-3 md:top-5 md:right-5 z-10">
                       <button
                         onClick={() => handleProtectedAction(() => setActiveChatDoc(doc))}
@@ -433,7 +420,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                         <div className="relative flex items-center justify-center">
                           <svg
                             className="w-3 h-3 md:w-4 md:h-4 animate-[spin_4s_linear_infinite]"
-                            viewBox="0 0 24 24"W
+                            viewBox="0 0 24 24"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
                           >
@@ -456,7 +443,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       </button>
                     </div>
 
-                    {/* Left Side: Document Icon & Title */}
                     <div className="flex flex-col md:flex-row items-start gap-2.5 md:gap-4 flex-1 min-w-0 pr-12 md:pr-16 w-full">
                       <div className="w-10 h-10 md:w-12 md:h-12 flex shrink-0 items-center justify-center bg-gradient-to-br from-red-500 to-orange-500 text-white rounded-xl shadow-md shadow-red-500/20 group-hover:scale-110 transition-transform duration-300">
                         <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -466,11 +452,10 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                       </div>
                       <div className="flex-1 min-w-0 w-full">
                         <h3 className="text-[11px] sm:text-xs md:text-base font-bold text-gray-900 dark:text-[#e3e3e3] leading-tight line-clamp-2 md:line-clamp-3 transition-colors group-hover:text-red-500 dark:group-hover:text-red-400">{doc.title}</h3>
-                        <p className="text-[9px] md:text-xs font-medium text-gray-500 dark:text-gray-500 mt-1 truncate">Added {new Date(doc.uploaded_at).toLocaleDateString()}</p>
+                        <p className="text-[9px] md:text-xs font-medium text-gray-500 dark:text-gray-500 mt-1 truncate">{t.added} {new Date(doc.uploaded_at).toLocaleDateString()}</p> {/* Translated */}
                       </div>
                     </div>
 
-                    {/* BOTTOM ROW: View, Download, Share */}
                     <div className="flex items-center gap-1.5 md:gap-3 mt-auto w-full pt-3 md:pt-4">
 
                       <button
@@ -478,7 +463,7 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                         className="flex-1 bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 py-2 md:py-2.5 rounded-lg md:rounded-xl text-[10px] sm:text-[11px] md:text-sm font-semibold transition-colors flex items-center justify-center gap-1 md:gap-1.5 overflow-hidden"
                       >
                         <svg className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        <span className="truncate">View</span>
+                        <span className="truncate">{t.view}</span> {/* Translated */}
                       </button>
 
                       <div className="flex gap-1.5 md:gap-2 shrink-0">
@@ -506,14 +491,18 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
           </>
         )}
 
-        {/* ----------------------------------------------------------------------
-            ENHANCED GLASSY FAQ SECTION
-        ---------------------------------------------------------------------- */}
+        {/* ENHANCED GLASSY FAQ SECTION */}
+       {/* ENHANCED GLASSY FAQ SECTION */}
         {currentView === 'semesters' && (
           <div className="mt-20 pt-8 border-t border-gray-200/60 dark:border-gray-800/50 mb-8 animate-fade-in">
             <div className="mb-6 px-2">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-[#e3e3e3]">Frequently Asked Questions</h2>
-              <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mt-1">Everything you need to know about using Notesroom.</p>
+              {/* TRANSLATED HEADINGS */}
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-[#e3e3e3]">
+                {t.faqTitle || "Frequently Asked Questions"}
+              </h2>
+              <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 mt-1">
+                {t.faqSubtitle || "Everything you need to know about using Notesroom."}
+              </p>
             </div>
 
             <div className="flex flex-col gap-4">
@@ -534,7 +523,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
                     </div>
                   </button>
 
-                  {/* Expandable Answer Area */}
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openFaq === index ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="px-5 pb-6 pt-2 border-t border-gray-200/30 dark:border-gray-700/30">
                       <div className="text-sm md:text-[15px] text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -547,7 +535,6 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn }) {
             </div>
           </div>
         )}
-
       </main>
 
       {/* Modals */}
