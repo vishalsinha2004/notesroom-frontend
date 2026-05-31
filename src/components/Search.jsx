@@ -5,11 +5,17 @@ import { documentAPI } from '../services/api';
 import ChatModal from './ChatModal';
 import PdfModal from './PdfModal';
 import ThemeToggle from './ThemeToggle';
-// 1. Import Helmet for dynamic SEO
 import { Helmet } from 'react-helmet-async';
+
+// Import translation mappings
+import { translations } from '../utils/translations';
 
 export default function Search({ isLoggedIn }) {
   const navigate = useNavigate();
+
+  // Language state pulling from localStorage
+  const [language, setLanguage] = useState(localStorage.getItem('language') || 'English');
+  const t = translations[language] || translations['English'];
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -20,6 +26,20 @@ export default function Search({ isLoggedIn }) {
   const [activeChatDoc, setActiveChatDoc] = useState(null);
   const [activePdfDoc, setActivePdfDoc] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
+
+  // Dynamically update language if it gets changed in another component/tab
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setLanguage(localStorage.getItem('language') || 'English');
+    };
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('languageChange', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('languageChange', handleStorageChange);
+    };
+  }, []);
 
   const handleProtectedAction = (action) => {
     if (!isLoggedIn) {
@@ -42,7 +62,6 @@ export default function Search({ isLoggedIn }) {
     setHasSearched(true);
 
     const delayDebounceFn = setTimeout(() => {
-      // Fetch all data and filter documents (Works without needing a custom search backend endpoint)
       documentAPI.getAllSemesters()
         .then(response => {
           const matchedDocs = [];
@@ -53,7 +72,6 @@ export default function Search({ isLoggedIn }) {
             sem.subjects.forEach(sub => {
               sub.documents.forEach(doc => {
                 if (doc.title.toLowerCase().includes(lowerQuery)) {
-                  // Attach parent info so user knows where the file is from
                   matchedDocs.push({
                     ...doc,
                     subjectName: sub.name,
@@ -72,7 +90,7 @@ export default function Search({ isLoggedIn }) {
         .finally(() => {
           setIsLoading(false);
         });
-    }, 500); // 500ms delay to prevent spamming the API while typing
+    }, 500);
 
     return () => clearTimeout(delayDebounceFn);
   }, [query]);
@@ -85,7 +103,7 @@ export default function Search({ isLoggedIn }) {
 
   const handleDownload = async (doc) => {
     try {
-      showToast('Starting download...');
+      showToast(t.startDownload);
       const response = await fetch(doc.file);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -110,23 +128,26 @@ export default function Search({ isLoggedIn }) {
   const handleShare = (doc) => {
     const fullUrl = window.location.origin + doc.file;
     navigator.clipboard.writeText(fullUrl).then(() => {
-      showToast('Link copied to clipboard!');
+      showToast(t.linkCopied);
     });
   };
 
   return (
     <div className="min-h-screen bg-[#f0f4f9] dark:bg-[#131314] text-gray-900 dark:text-[#e3e3e3] transition-colors duration-300 font-sans relative pb-20 md:pb-8">
 
-      {/* 2. Add the Helmet SEO data for the Search Page */}
       <Helmet>
-        <title>Search Documents | Notesroom</title>
+        <title>{t.searchNotes} | Notesroom</title>
         <meta name="description" content="Search through thousands of notes, documents, and coursework materials shared by the Notesroom community." />
       </Helmet>
 
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 bg-gray-900 dark:bg-[#e3e3e3] text-white dark:text-gray-900 px-5 py-3 rounded-full shadow-lg z-50 animate-slide-in-up text-sm font-medium flex items-center gap-2">
-          <span>✅</span> {toastMessage}
+          {/* Replaced Checkmark Emoji with SVG */}
+          <svg className="w-5 h-5 text-green-400 dark:text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path>
+          </svg>
+          {toastMessage}
         </div>
       )}
 
@@ -138,7 +159,7 @@ export default function Search({ isLoggedIn }) {
               <button className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full hover:bg-gray-200 dark:hover:bg-[#1e1f20] transition-colors">
                 <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"></path></svg>
               </button>
-              <h1 className="text-lg md:text-xl font-semibold tracking-tight">Search Notes</h1>
+              <h1 className="text-lg md:text-xl font-semibold tracking-tight">{t.searchNotes}</h1>
             </div>
           </div>
         </div>
@@ -174,8 +195,6 @@ export default function Search({ isLoggedIn }) {
                 </linearGradient>
               </defs>
             </svg>
-
-            {/* Subtle background glow effect on hover (matching the floating button) */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-purple-500/10 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
           </button>
 
@@ -188,7 +207,7 @@ export default function Search({ isLoggedIn }) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search for documents, topics, or subjects..."
+              placeholder={t.searchPlaceholder}
               autoFocus
               className="w-full h-full bg-white dark:bg-[#1e1f20] text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800/50 rounded-2xl md:rounded-3xl pl-12 md:pl-16 pr-12 py-4 md:py-5 text-sm md:text-lg font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-gray-400"
             />
@@ -207,33 +226,44 @@ export default function Search({ isLoggedIn }) {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 opacity-50">
             <svg className="animate-spin h-10 w-10 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <p className="font-medium">Searching documents...</p>
+            <p className="font-medium">{t.searchingDocs}</p>
           </div>
         ) : !hasSearched ? (
           // Empty State - Before Searching
           <div className="flex flex-col items-center justify-center py-16 md:py-24 text-center">
-            <div className="text-6xl md:text-8xl mb-6 opacity-80">🔍</div>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">Find your notes instantly</h2>
-            <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 max-w-md">Type a keyword above to search through all your semester subjects and documents.</p>
+            {/* Replaced magnifying glass emoji with SVG */}
+            <svg className="w-20 h-20 md:w-24 md:h-24 mb-6 text-gray-300 dark:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">{t.findNotesInstantly}</h2>
+            <p className="text-sm md:text-base text-gray-500 dark:text-gray-400 max-w-md">{t.typeKeywordDesc}</p>
           </div>
         ) : results.length === 0 ? (
           // Empty State - No Results
           <div className="flex flex-col items-center justify-center py-16 md:py-24 text-center animate-fade-in">
-            <div className="text-6xl md:text-8xl mb-6 opacity-80">📂</div>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">No documents found</h2>
-            <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">We couldn't find anything matching "{query}". Try adjusting your keywords.</p>
+            {/* Replaced folder emoji with SVG */}
+            <svg className="w-20 h-20 md:w-24 md:h-24 mb-6 text-gray-300 dark:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+            </svg>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">{t.noDocsFound}</h2>
+            <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">{t.couldNotFind} "{query}". {t.tryAdjusting}</p>
           </div>
         ) : (
           // Results Grid
           <div className="animate-fade-in">
-            <h3 className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-4 ml-2">Found {results.length} Documents</h3>
+            <h3 className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-4 ml-2">{t.foundCount} {results.length} {t.docsCountText}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {results.map(doc => (
                 <div key={doc.id} className="bg-white dark:bg-[#1e1f20] rounded-2xl shadow-sm border border-transparent dark:border-gray-800/30 p-4 md:p-5 flex flex-col gap-4 md:gap-5 hover:shadow-md transition-shadow duration-200">
 
                   {/* Doc Info */}
                   <div className="flex items-start gap-3 md:gap-4">
-                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 dark:bg-[#303134] rounded-xl text-xl md:text-2xl flex shrink-0 items-center justify-center">📄</div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-50/50 dark:bg-[#303134] rounded-xl flex shrink-0 items-center justify-center text-blue-500 dark:text-blue-400">
+                      {/* Replaced document emoji with professional Document SVG */}
+                      <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      </svg>
+                    </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm md:text-base font-semibold text-gray-900 dark:text-[#e3e3e3] leading-snug line-clamp-2">{doc.title}</h3>
                       {/* Breadcrumbs showing where this doc belongs */}
@@ -249,13 +279,17 @@ export default function Search({ isLoggedIn }) {
                       onClick={() => handleProtectedAction(() => setActivePdfDoc(doc))}
                       className="flex-1 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-colors"
                     >
-                      View
+                      {t.view}
                     </button>
                     <button
                       onClick={() => handleProtectedAction(() => setActiveChatDoc(doc))}
-                      className="flex-1 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-colors flex items-center justify-center gap-1"
+                      className="flex-1 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-colors flex items-center justify-center gap-1.5"
                     >
-                      <span>✨</span> AI
+                      {/* Replaced Sparkles Emoji with SVG */}
+                      <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                      </svg>
+                      AI
                     </button>
                     <div className="flex gap-2 md:gap-3">
                       <button onClick={() => handleProtectedAction(() => handleDownload(doc))} className="w-10 h-9 md:w-12 md:h-10 flex items-center justify-center bg-gray-50 dark:bg-[#303134]/50 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#303134] rounded-xl transition-colors">

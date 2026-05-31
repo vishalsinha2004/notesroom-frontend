@@ -3,16 +3,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import logo from '../assets/logo.png'; 
-import { translations } from '../utils/translations'; // Import the translation dictionary
-// 1. Import Helmet for dynamic SEO
+import { translations } from '../utils/translations'; 
 import { Helmet } from 'react-helmet-async';
 
-// ADDED language and setLanguage as props
 export default function Profile({ setIsLoggedIn, language, setLanguage }) {
   const navigate = useNavigate();
   
-  // Get the correct language object from the dictionary
-  const t = translations[language] || translations['English']; // Fallback to English if undefined
+  const t = translations[language] || translations['English']; 
 
   const [isLoading, setIsLoading] = useState(true);
   const [userData, setUserData] = useState({ username: '', email: '', profile_picture: null });
@@ -81,14 +78,13 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
   };
 
   const handleLanguageSelect = (lang) => {
-    setLanguage(lang); // Update global app state
-    localStorage.setItem('language', lang); // Save preference
+    setLanguage(lang); 
+    localStorage.setItem('language', lang); 
     setExpandedSection(null); 
   };
 
   return (
     <>
-      {/* 2. Add the Helmet SEO data for the Profile Page */}
       <Helmet>
         <title>Profile Settings | Notesroom</title>
         <meta name="description" content="Manage your Notesroom account, preferences, theme, and language settings." />
@@ -104,7 +100,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
                  <button className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full hover:bg-gray-200 dark:hover:bg-[#1e1f20] transition-colors">
                    <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"></path></svg>
                  </button>
-                {/* Translated Profile Title */}
                 <h1 className="text-lg md:text-xl font-semibold tracking-tight">{t.profile}</h1>
               </div>
             </div>
@@ -147,8 +142,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
             </div>
           </div>
 
-          {/* Translated Preferences Heading */}
-          <h3 className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-2 md:mb-3 ml-2">{t.preferences}</h3>
           
           <div className="bg-white dark:bg-[#1e1f20] rounded-[24px] shadow-sm border border-transparent dark:border-gray-800/30 overflow-hidden mb-6 md:mb-8">
             
@@ -156,7 +149,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
               <button onClick={() => toggleSection('account')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
                 <div className="flex items-center gap-3 md:gap-4">
                   <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                  {/* Translated Account Info */}
                   <span className="text-sm md:text-base font-medium">{t.accountInfo}</span>
                 </div>
                 <svg className={`w-4 h-4 md:w-5 md:h-5 text-gray-400 transition-transform duration-200 ${expandedSection === 'account' ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
@@ -165,7 +157,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
                 <div className="px-5 py-4 md:py-6 bg-gray-50/50 dark:bg-[#131314]/50 border-t border-gray-100 dark:border-gray-800/50">
                   <div className="space-y-4 md:space-y-5">
                     <div>
-                      {/* Translated Username */}
                       <label className="text-[11px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider">{t.username}</label>
                       {isLoading ? (
                          <div className="mt-1.5 h-11 md:h-12 w-full bg-gray-200 dark:bg-gray-700/50 rounded-xl animate-pulse"></div>
@@ -174,7 +165,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
                       )}
                     </div>
                     <div>
-                      {/* Translated Email Address */}
                       <label className="text-[11px] md:text-xs font-semibold text-gray-500 uppercase tracking-wider">{t.emailAddress}</label>
                       {isLoading ? (
                          <div className="mt-1.5 h-11 md:h-12 w-full bg-gray-200 dark:bg-gray-700/50 rounded-xl animate-pulse"></div>
@@ -191,7 +181,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
               <button onClick={() => toggleSection('theme')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
                 <div className="flex items-center gap-3 md:gap-4">
                   <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                  {/* Translated Appearance */}
                   <span className="text-sm md:text-base font-medium">{t.appearance}</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -218,7 +207,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
               <button onClick={() => toggleSection('notifications')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
                 <div className="flex items-center gap-3 md:gap-4">
                   <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                  {/* Translated Notifications */}
                   <span className="text-sm md:text-base font-medium">{t.notifications}</span>
                 </div>
                 <svg className={`w-4 h-4 md:w-5 md:h-5 text-gray-400 transition-transform duration-200 ${expandedSection === 'notifications' ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
@@ -245,18 +233,15 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
               <button onClick={() => toggleSection('language')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
                 <div className="flex items-center gap-3 md:gap-4">
                   <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
-                  {/* Translated Language Header */}
                   <span className="text-sm md:text-base font-medium">{t.language}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  {/* DO NOT translate the currently selected language variable so they always know what to click */}
                   <span className="text-[13px] md:text-sm text-gray-500 font-medium">{language}</span>
                   <svg className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${expandedSection === 'language' ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
                 </div>
               </button>
               {expandedSection === 'language' && (
                 <div className="px-5 py-4 bg-gray-50/50 dark:bg-[#131314]/50 border-t border-gray-100 dark:border-gray-800/50 flex flex-col gap-2">
-                  {/* Language options stay in native names for easy identification */}
                   {['English', 'Hindi', 'Gujarati'].map((lang) => (
                     <button 
                       key={lang} 
@@ -274,7 +259,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
               <button onClick={() => toggleSection('ai')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
                 <div className="flex items-center gap-3 md:gap-4">
                   <svg className="w-5 h-5 md:w-6 md:h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                  {/* Translated Notesroom AI */}
                   <span className="text-sm md:text-base font-medium">{t.notesroomAi}</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -287,7 +271,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
                     onClick={() => navigate('/ai')} 
                     className="w-full py-2.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:hover:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                   >
-                    {/* Translated Use Notesroom AI */}
                     {t.useAi} 
                   </button>
                 </div>
@@ -295,8 +278,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
             </div>
           </div>
 
-          {/* Translated Support Heading */}
-          <h3 className="text-xs md:text-sm font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-2 md:mb-3 ml-2">{t.support}</h3>
 
           <div className="bg-white dark:bg-[#1e1f20] rounded-[24px] shadow-sm border border-transparent dark:border-gray-800/30 overflow-hidden mb-8 md:mb-10">
             
@@ -304,7 +285,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
               <button onClick={() => toggleSection('help')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
                 <div className="flex items-center gap-3 md:gap-4">
                   <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  {/* Translated Help & Support */}
                   <span className="text-sm md:text-base font-medium">{t.helpSupport}</span>
                 </div>
                 <svg className={`w-4 h-4 md:w-5 md:h-5 text-gray-400 transition-transform duration-200 ${expandedSection === 'help' ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
@@ -312,12 +292,10 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
               {expandedSection === 'help' && (
                 <div className="px-5 py-5 bg-gray-50/50 dark:bg-[#131314]/50 border-t border-gray-100 dark:border-gray-800/50">
                   <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                    {/* Translated Help Text */}
                     {t.helpText}
                     <div className="text-center text-blue-600 dark:text-blue-400 mt-2 font-medium">notesroomofficial@gmail.com</div>
                   </div>
                   <a href="mailto:notesroomofficial@gmail.com" className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold transition-colors">
-                    {/* Translated Contact Support */}
                     {t.contactSupport}
                   </a>
                 </div>
@@ -328,7 +306,6 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
               <button onClick={() => toggleSection('about')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
                 <div className="flex items-center gap-3 md:gap-4">
                   <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  {/* Translated About Notesroom */}
                   <span className="text-sm md:text-base font-medium">{t.about}</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -348,11 +325,9 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
                     </div>
                   </div>
                   <h4 className="text-center font-bold text-gray-900 dark:text-white mb-1">Notesroom</h4>
-                  {/* Translated Tagline */}
                   <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-4">{t.tagline}</p>
                   <div className="text-xs text-center text-gray-400 flex flex-col gap-1">
                     <span>© 2026 Notesroom Inc.</span>
-                    {/* Translated Rights Reserved */}
                     <span>{t.rights}</span>
                   </div>
                 </div>
@@ -360,13 +335,20 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
             </div>
           </div>
 
+          {/* NORMAL, SLIMMER LOGOUT BUTTON (Matching Preferences Style) */}
           <button 
             onClick={handleLogout}
-            className="w-full px-5 py-4 md:py-5 bg-white dark:bg-[#1e1f20] rounded-[24px] shadow-sm border border-transparent dark:border-gray-800/30 flex items-center justify-center gap-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 transition-colors group"
+            className="w-full px-5 py-3.5 md:py-4 bg-white dark:bg-[#1e1f20] rounded-[20px] shadow-sm border border-transparent dark:border-gray-800/30 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors text-gray-800 dark:text-[#e3e3e3] group"
           >
-            <svg className="w-5 h-5 md:w-6 md:h-6 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            {/* Translated Log Out */}
-            <span className="text-sm md:text-base font-bold">{t.logOut}</span>
+            <div className="flex items-center gap-3 md:gap-4">
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+              </svg>
+              <span className="text-sm md:text-base font-medium">{t.logOut}</span>
+            </div>
+            <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+            </svg>
           </button>
 
         </main>

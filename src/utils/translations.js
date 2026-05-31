@@ -67,7 +67,21 @@ export const translations = {
     faq4Q: "Where can I manage my account and app preferences?",
     faq4A1: "Your profile acts as your central command center. Here, you can review your account details, verify your active subscription tier, and customize your application experience entirely to your liking.",
     faq4A2: "You have full control over preferences, including toggling Dark Mode for comfortable late-night studying, turning email alerts on or off, and selecting your preferred display language.",
-    openProfile: "Open Profile Settings"
+    openProfile: "Open Profile Settings",
+
+    // Search Page 
+    searchNotes: "Search Notes",
+    searchPlaceholder: "Search for documents, topics, or subjects...",
+    searchingDocs: "Searching documents...",
+    findNotesInstantly: "Find your notes instantly",
+    typeKeywordDesc: "Type a keyword above to search through all your semester subjects and documents.",
+    noDocsFound: "No documents found",
+    couldNotFind: "We couldn't find anything matching",
+    tryAdjusting: "Try adjusting your keywords.",
+    foundCount: "Found",
+    docsCountText: "Documents",
+    startDownload: "Starting download...",
+    linkCopied: "Link copied to clipboard!"
   },
   
   Hindi: {
@@ -106,7 +120,7 @@ export const translations = {
     helpSupport: "मदद और सहायता",
     helpText: "अपने नोट्स या खाते के बारे में सहायता चाहिए? हमारी सहायता टीम आपको Notesroom का सर्वोत्तम अनुभव प्राप्त करने में मदद करने के लिए यहाँ है",
     contactSupport: "सहायता टीम से संपर्क करें",
-    about: "Notesroom के बारे में",
+    about: "Notesroom के बारे बारे में",
     tagline: "आपका अंतिम AI-संचालित अध्ययन साथी।",
     rights: "सर्वाधिकार सुरक्षित।",
 
@@ -137,7 +151,21 @@ export const translations = {
     faq4Q: "मैं अपने खाते और ऐप प्राथमिकताओं को कहां प्रबंधित कर सकता हूं?",
     faq4A1: "आपकी प्रोफ़ाइल आपके केंद्रीय कमांड सेंटर के रूप में कार्य करती है। यहां, आप अपने खाते के विवरण की समीक्षा कर सकते हैं, अपने सक्रिय सदस्यता स्तर को सत्यापित कर सकते हैं, और अपने एप्लिकेशन अनुभव को पूरी तरह से अपनी पसंद के अनुसार अनुकूलित कर सकते हैं।",
     faq4A2: "आपके पास प्राथमिकताओं पर पूरा नियंत्रण है, जिसमें आरामदायक देर रात के अध्ययन के लिए डार्क मोड को चालू करना, ईमेल अलर्ट चालू या बंद करना और अपनी पसंदीदा प्रदर्शन भाषा का चयन करना शामिल है।",
-    openProfile: "प्रोफ़ाइल सेटिंग्स खोलें"
+    openProfile: "प्रोफ़ाइल सेटिंग्स खोलें",
+
+    // Search Page
+    searchNotes: "नोट्स खोजें",
+    searchPlaceholder: "दस्तावेज़, विषय या पाठ्यक्रम खोजें...",
+    searchingDocs: "दस्तावेज़ खोजे जा रहे हैं...",
+    findNotesInstantly: "अपने नोट्स तुरंत खोजें",
+    typeKeywordDesc: "अपने सभी सेमेस्टर विषयों और दस्तावेज़ों में खोजने के लिए ऊपर एक कीवर्ड टाइप करें।",
+    noDocsFound: "कोई दस्तावेज़ नहीं मिला",
+    couldNotFind: "हमें इसके मेल खाने वाला कुछ नहीं मिला",
+    tryAdjusting: "अपने कीवर्ड बदलने का प्रयास करें।",
+    foundCount: "कुल",
+    docsCountText: "दस्तावेज़ मिले",
+    startDownload: "डाउनलोड शुरू हो रहा है...",
+    linkCopied: "लिंक क्लिपबोर्ड पर कॉपी हो गया!"
   },
   
   Gujarati: {
@@ -207,6 +235,20 @@ export const translations = {
     faq4Q: "હું મારું એકાઉન્ટ અને એપ્લિકેશન પસંદગીઓ ક્યાં સંચાલિત કરી શકું?",
     faq4A1: "તમારી પ્રોફાઇલ તમારા કેન્દ્રીય કમાન્ડ સેન્ટર તરીકે કાર્ય કરે છે. અહીં, તમે તમારી એકાઉન્ટ વિગતોની સમીક્ષા કરી શકો છો, તમારું સક્રિય સબ્સ્ક્રિપ્શન ટિયર ચકાસી શકો છો અને તમારા એપ્લિકેશન અનુભવને સંપૂર્ણપણે તમારી પસંદ મુજબ કસ્ટમાઇઝ કરી શકો છો.",
     faq4A2: "આરામદાયક મોડી રાત્રિના અભ્યાસ માટે ડાર્ક મોડને ટૉગલ કરવા, ઇમેઇલ ચેતવણીઓ ચાલુ અથવા બંધ કરવા અને તમારી પસંદગીની પ્રદર્શન ભાષા પસંદ કરવા સહિત, તમારી પાસે પસંદગીઓ પર સંપૂર્ણ નિયંત્રણ છે.",
-    openProfile: "પ્રોફાઇલ સેટિંગ્સ ખોલો"
+    openProfile: "પ્રોફાઇલ સેટિંગ્સ ખોલો",
+
+    // Search Page
+    searchNotes: "નોંધો શોધો",
+    searchPlaceholder: "દસ્તાવેજો, વિષયો અથવા અભ્યાસક્રમો શોધો...",
+    searchingDocs: "દસ્તાવેજો શોધી રહ્યા છીએ...",
+    findNotesInstantly: "તમારી નોંધો તરત જ શોધો",
+    typeKeywordDesc: "તમારા તમામ સેમેસ્ટર વિષયો અને દસ્તાવેજો શોધવા માટે ઉપર કીવર્ડ લખો.",
+    noDocsFound: "કોઈ દસ્તાવેજ મળ્યા નથી",
+    couldNotFind: "અમને આનાથી મેળ ખાતું કંઈ મળ્યું નથી",
+    tryAdjusting: "તમારા કીવર્ડ્સને સમાયોજિત કરવાનો પ્રયાસ કરો.",
+    foundCount: "કુલ",
+    docsCountText: "દસ્તાવેજો મળ્યા",
+    startDownload: "ડાઉનલોડ શરૂ થઈ રહ્યું છે...",
+    linkCopied: "લિંક ક્લિપબોર્ડ પર કૉપિ થઈ ગઈ!"
   }
 };
