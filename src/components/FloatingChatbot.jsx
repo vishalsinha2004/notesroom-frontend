@@ -1,7 +1,7 @@
 // src/components/FloatingChatbot.jsx
 import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { documentAPI } from '../services/api';
+import { documentAPI, authAPI } from '../services/api'; // ADDED authAPI import
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Mermaid from './Mermaid'; 
@@ -13,8 +13,10 @@ export default function FloatingChatbot() {
   const isAiPage = location.pathname === '/ai';
   const [isOpen, setIsOpen] = useState(isAiPage);
   
-  // Reverted Memory: Starts fresh every time
   const [messages, setMessages] = useState([]);
+  
+  // NEW: State to store the real username
+  const [username, setUsername] = useState('');
   
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -29,6 +31,17 @@ export default function FloatingChatbot() {
   const textareaRef = useRef(null); 
   
   const isChatStarted = messages.length > 0;
+
+  // NEW: Fetch the user's profile when the chatbot loads
+  useEffect(() => {
+    authAPI.getProfile()
+      .then(response => {
+        setUsername(response.data.username || '');
+      })
+      .catch(err => {
+        console.error("Failed to fetch username for chatbot", err);
+      });
+  }, []);
 
   useEffect(() => {
     if (isAiPage) setIsOpen(true);
@@ -58,6 +71,18 @@ export default function FloatingChatbot() {
   const handleClose = () => {
     setIsOpen(false);
     if (isAiPage) navigate('/dashboard'); 
+  };
+
+  const handleRefresh = () => {
+    if (isTyping) return;
+    setMessages([]);
+    setInput('');
+    setSelectedFile(null);
+    setCopiedIndex(null);
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    }
   };
 
   const handleFileUpload = (e) => {
@@ -225,7 +250,7 @@ export default function FloatingChatbot() {
       `}</style>
 
       {!isOpen && !isAiPage && (
-        <button onClick={() => setIsOpen(true)} className="fixed bottom-24 md:bottom-6 right-4 md:right-6 flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-white dark:bg-[#1e1f20] rounded-full shadow-lg border border-gray-100 hover:scale-105 transition-all z-[60] group overflow-hidden">
+        <button onClick={() => setIsOpen(true)} className="fixed bottom-24 md:bottom-6 right-4 md:right-6 flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-white dark:bg-[#1e1f20] rounded-full shadow-lg border border-gray-100 dark:border-gray-800 hover:scale-105 transition-all z-[60] group overflow-hidden">
           <div className="relative flex items-center justify-center">
             <svg className="w-8 h-8 md:w-10 md:h-10 animate-[spin_4s_linear_infinite]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 2C12.5 7.5 16.5 11.5 22 12C16.5 12.5 12.5 16.5 12 22C11.5 16.5 7.5 12.5 2 12C7.5 11.5 11.5 7.5 12 2Z" fill="url(#flowerGradient)"/>
@@ -238,24 +263,41 @@ export default function FloatingChatbot() {
       {isOpen && (
         <div className="fixed inset-0 z-[100] bg-white dark:bg-[#131314] flex flex-col animate-fade-in">
           
-          <div className="flex items-center justify-between px-6 py-4 bg-transparent shrink-0 z-10 relative border-b border-gray-100 dark:border-gray-800/50">
-            <button onClick={handleClose} className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 bg-gray-100 dark:bg-[#1e1f20] px-4 py-2 rounded-xl font-medium transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Back
-            </button>
-            <h3 className="font-medium text-gray-900 dark:text-[#e3e3e3] text-lg flex items-center gap-2">
-               Notesroom AI
+          <div className="flex items-center justify-between px-4 md:px-6 py-4 bg-transparent shrink-0 z-10 relative border-b border-gray-100 dark:border-gray-800/50">
+            <div className="flex-1 flex justify-start">
+              <button onClick={handleClose} className="flex items-center gap-1.5 md:gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 bg-gray-100 dark:bg-[#1e1f20] px-3 py-1.5 md:px-4 md:py-2 rounded-xl font-medium transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> 
+                <span className="hidden sm:inline">Back</span>
+              </button>
+            </div>
+            
+            <h3 className="font-medium text-gray-900 dark:text-[#e3e3e3] text-base md:text-lg flex items-center justify-center flex-1 shrink-0">
+              Notesroom AI
             </h3>
-            <div className="w-[100px] hidden md:block"></div>
+            
+            <div className="flex-1 flex justify-end">
+              <button 
+                onClick={handleRefresh} 
+                disabled={isTyping}
+                className="flex items-center gap-1.5 md:gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 bg-gray-100 dark:bg-[#1e1f20] px-3 py-1.5 md:px-4 md:py-2 rounded-xl font-medium transition-colors disabled:opacity-50"
+                title="Refresh Chat"
+              >
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+              </button>
+            </div>
           </div>
 
           {!isChatStarted ? (
             <div className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-[80vw] h-[50vh] bg-blue-500/10 dark:bg-[#1a365d]/40 rounded-[100%] blur-[100px] pointer-events-none"></div>
               
-              <h2 className="text-[2.2rem] md:text-[3rem] font-medium text-gray-800 dark:text-[#e3e3e3] mb-8 relative z-10 text-center">
-                Where should we start?
-              </h2>
-              
+              {/* UPDATED HEADING WITH REAL USERNAME */}
+              <h2 className="text-[2.2rem] md:text-[3rem] font-medium text-gray-800 dark:text-[#e3e3e3] mb-8 relative z-10 text-center leading-tight">
+                  Hello, {username ? username : 'there'}
+                
+              </h2>      
               <div className="w-full max-w-3xl relative z-10">
                 {renderInputForm()}
                 <p className="text-center text-xs text-gray-400 mt-4">AI generated content may be inaccurate. Please verify important information.</p>
@@ -287,7 +329,6 @@ export default function FloatingChatbot() {
                                 th: (props) => <th className="px-4 py-2 bg-gray-50 dark:bg-[#1e1f20] text-left text-xs font-bold text-gray-500 uppercase border-b border-gray-200 dark:border-gray-800" {...props} />,
                                 td: (props) => <td className="px-4 py-2 text-sm border-b border-gray-100 dark:border-gray-800/50" {...props} />,
                                 
-                                // Reverted syntax highlighting, kept Mermaid logic
                                 pre: ({ children }) => <>{children}</>,
                                 code: ({ className, children, ...props }) => {
                                   const match = /language-(\w+)/.exec(className || '');
