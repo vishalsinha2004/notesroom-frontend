@@ -40,6 +40,12 @@ export default function FloatingChatbot() {
   
   const isChatStarted = messages.length > 0;
 
+  useEffect(() => {
+    const handleOpenChat = () => setIsOpen(true);
+    window.addEventListener('open-notesroom-ai', handleOpenChat);
+    return () => window.removeEventListener('open-notesroom-ai', handleOpenChat);
+  }, []);
+  
   // 3. Save isOpen state to sessionStorage whenever it changes
   useEffect(() => {
     if (!isAiPage) {

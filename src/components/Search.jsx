@@ -5,6 +5,7 @@ import { documentAPI } from '../services/api';
 import ChatModal from './ChatModal';
 import PdfModal from './PdfModal';
 import ThemeToggle from './ThemeToggle';
+import FloatingChatbot from './FloatingChatbot'; // <-- 1. ADD THIS IMPORT
 import { Helmet } from 'react-helmet-async';
 
 // Import translation mappings
@@ -143,7 +144,6 @@ export default function Search({ isLoggedIn }) {
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 bg-gray-900 dark:bg-[#e3e3e3] text-white dark:text-gray-900 px-5 py-3 rounded-full shadow-lg z-50 animate-slide-in-up text-sm font-medium flex items-center gap-2">
-          {/* Replaced Checkmark Emoji with SVG */}
           <svg className="w-5 h-5 text-green-400 dark:text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path>
           </svg>
@@ -172,8 +172,8 @@ export default function Search({ isLoggedIn }) {
         <div className="flex items-stretch gap-3 md:gap-4 mb-8 md:mb-12">
 
           {/* AI Page Button */}
-          <button
-            onClick={() => navigate('/ai')}
+         <button
+            onClick={() => window.dispatchEvent(new CustomEvent('open-notesroom-ai'))}
             className="flex-shrink-0 flex items-center justify-center w-[60px] md:w-[76px] bg-white dark:bg-[#1e1f20] rounded-2xl md:rounded-3xl shadow-sm border border-gray-200 dark:border-gray-800/50 hover:bg-gray-50 dark:hover:bg-[#303134] hover:scale-[1.02] transition-all duration-200 group overflow-hidden relative"
             title="Open Notesroom AI"
           >
@@ -231,7 +231,6 @@ export default function Search({ isLoggedIn }) {
         ) : !hasSearched ? (
           // Empty State - Before Searching
           <div className="flex flex-col items-center justify-center py-16 md:py-24 text-center">
-            {/* Replaced magnifying glass emoji with SVG */}
             <svg className="w-20 h-20 md:w-24 md:h-24 mb-6 text-gray-300 dark:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
@@ -241,7 +240,6 @@ export default function Search({ isLoggedIn }) {
         ) : results.length === 0 ? (
           // Empty State - No Results
           <div className="flex flex-col items-center justify-center py-16 md:py-24 text-center animate-fade-in">
-            {/* Replaced folder emoji with SVG */}
             <svg className="w-20 h-20 md:w-24 md:h-24 mb-6 text-gray-300 dark:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
             </svg>
@@ -259,14 +257,12 @@ export default function Search({ isLoggedIn }) {
                   {/* Doc Info */}
                   <div className="flex items-start gap-3 md:gap-4">
                     <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-50/50 dark:bg-[#303134] rounded-xl flex shrink-0 items-center justify-center text-blue-500 dark:text-blue-400">
-                      {/* Replaced document emoji with professional Document SVG */}
                       <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm md:text-base font-semibold text-gray-900 dark:text-[#e3e3e3] leading-snug line-clamp-2">{doc.title}</h3>
-                      {/* Breadcrumbs showing where this doc belongs */}
                       <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
                         {doc.subjectName} <span className="mx-1">•</span> {doc.semesterName}
                       </p>
@@ -285,7 +281,6 @@ export default function Search({ isLoggedIn }) {
                       onClick={() => handleProtectedAction(() => setActiveChatDoc(doc))}
                       className="flex-1 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/40 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-colors flex items-center justify-center gap-1.5"
                     >
-                      {/* Replaced Sparkles Emoji with SVG */}
                       <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
                       </svg>
@@ -310,6 +305,10 @@ export default function Search({ isLoggedIn }) {
       {/* Modals */}
       {activeChatDoc && <ChatModal document={activeChatDoc} onClose={() => setActiveChatDoc(null)} />}
       {activePdfDoc && <PdfModal document={activePdfDoc} onClose={() => setActivePdfDoc(null)} />}
+      
+      {/* 2. ADD THE FLOATING CHATBOT HERE */}
+      <FloatingChatbot />
+      
     </div>
   );
 }

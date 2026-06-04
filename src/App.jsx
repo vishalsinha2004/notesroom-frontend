@@ -13,6 +13,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import MobileNavbar from './components/MobileNavbar';
 import Search from './components/Search';
 import SplashScreen from './components/SplashScreen'; 
+import About from './components/About';
 
 // --- Reusable Animation Wrapper ---
 function PageWrapper({ children }) {
@@ -87,6 +88,8 @@ function AnimatedRoutes({ isLoggedIn, setIsLoggedIn, language, setLanguage }) {
             {isLoggedIn ? <Profile setIsLoggedIn={setIsLoggedIn} language={language} setLanguage={setLanguage} /> : <Navigate to="/login" />}
           </PageWrapper>
         } />
+        
+        <Route path="/about" element={<About language={language} />} />
         
         <Route path="/search" element={
           <PageWrapper><Search isLoggedIn={isLoggedIn} /></PageWrapper>

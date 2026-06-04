@@ -6,6 +6,7 @@ import ChatModal from './ChatModal';
 import PdfModal from './PdfModal';
 import ThemeToggle from './ThemeToggle';
 import FloatingChatbot from './FloatingChatbot';
+import FloatingUploadButton from './FloatingUploadButton'; // ADD THIS IMPORT
 import logo from '../assets/logo.png';
 import { translations } from '../utils/translations'; 
 import { Helmet } from 'react-helmet-async';
@@ -564,9 +565,16 @@ export default function Dashboard({ isLoggedIn, setIsLoggedIn, language }) {
       {activeChatDoc && <ChatModal document={activeChatDoc} onClose={() => setActiveChatDoc(null)} />}
       {activePdfDoc && <PdfModal document={activePdfDoc} onClose={() => setActivePdfDoc(null)} />}
       
-      {/* GLOBAL CHATBOT - Conditionally rendered ONLY on the semesters view */}
+      
+
+      {/* NEW UPLOAD BUTTON: Show only if logged in and on the main page */}
       {currentView === 'semesters' && (
         <FloatingChatbot />
+      )}
+
+      {/* UPLOAD BUTTON: Hidden on the main Dashboard, shown ONLY on Subjects & Documents */}
+      {isLoggedIn && currentView !== 'semesters' && (
+        <FloatingUploadButton semesters={semesters} />
       )}
 
     </div>

@@ -32,8 +32,17 @@ export const documentAPI = {
     // 1. Fetch the nested Semesters > Subjects > Documents structure
     getAllSemesters: () => api.get('/semesters/'),
     
-    // 2. AI Chat Endpoint
+    // 2. Upload Document Endpoint (NEW FEATURE)
+    // Requires multipart/form-data header to properly transmit the PDF/File payload
+    uploadDocument: (formData) => api.post('/upload-document/', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    }),
+    
+    // 3. AI Chat Endpoint
     chat: (id, message) => api.post(`/documents/${id}/chat/`, { message }),
 
+    // 4. General AI Chat
     generalChat: (message) => api.post('/chat/', { message }),
 };

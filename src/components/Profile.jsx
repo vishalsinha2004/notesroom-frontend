@@ -303,16 +303,26 @@ export default function Profile({ setIsLoggedIn, language, setLanguage }) {
             </div>
 
             <div>
-              <button onClick={() => toggleSection('about')} className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors">
+             <div>
+              <button 
+                onClick={() => navigate('/about')} 
+                className="w-full px-5 py-4 md:py-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-[#303134]/50 transition-colors"
+              >
                 <div className="flex items-center gap-3 md:gap-4">
-                  <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
                   <span className="text-sm md:text-base font-medium">{t.about}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] md:text-xs text-gray-400 bg-gray-100 dark:bg-[#131314] px-2.5 py-1 rounded-md font-medium">v1.0.0</span>
-                  <svg className={`w-4 h-4 md:w-5 md:h-5 text-gray-400 transition-transform duration-200 ${expandedSection === 'about' ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                  {/* Right-pointing arrow indicating navigation */}
+                  <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path>
+                  </svg>
                 </div>
               </button>
+            </div>
               {expandedSection === 'about' && (
                 <div className="px-5 py-5 bg-gray-50/50 dark:bg-[#131314]/50 border-t border-gray-100 dark:border-gray-800/50">
                   <div className="flex justify-center mb-3">
