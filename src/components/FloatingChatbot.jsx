@@ -1,7 +1,7 @@
 // src/components/FloatingChatbot.jsx
 import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { documentAPI, authAPI } from '../services/api'; // ADDED authAPI import
+import { documentAPI, authAPI } from '../services/api';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Mermaid from './Mermaid'; 
@@ -11,11 +11,19 @@ export default function FloatingChatbot() {
   const navigate = useNavigate();
   
   const isAiPage = location.pathname === '/ai';
-  const [isOpen, setIsOpen] = useState(isAiPage);
+
+  // 1. Initialize isOpen from sessionStorage so it stays open on refresh
+  const [isOpen, setIsOpen] = useState(() => {
+    if (isAiPage) return true;
+    return sessionStorage.getItem('notesroom_chat_isOpen') === 'true';
+  });
   
-  const [messages, setMessages] = useState([]);
+  // 2. Initialize messages from sessionStorage so chat history isn't lost
+  const [messages, setMessages] = useState(() => {
+    const saved = sessionStorage.getItem('notesroom_chat_messages');
+    return saved ? JSON.parse(saved) : [];
+  });
   
-  // NEW: State to store the real username
   const [username, setUsername] = useState('');
   
   const [input, setInput] = useState('');
@@ -32,7 +40,18 @@ export default function FloatingChatbot() {
   
   const isChatStarted = messages.length > 0;
 
-  // NEW: Fetch the user's profile when the chatbot loads
+  // 3. Save isOpen state to sessionStorage whenever it changes
+  useEffect(() => {
+    if (!isAiPage) {
+      sessionStorage.setItem('notesroom_chat_isOpen', isOpen);
+    }
+  }, [isOpen, isAiPage]);
+
+  // 4. Save messages to sessionStorage whenever they change
+  useEffect(() => {
+    sessionStorage.setItem('notesroom_chat_messages', JSON.stringify(messages));
+  }, [messages]);
+
   useEffect(() => {
     authAPI.getProfile()
       .then(response => {
@@ -293,10 +312,8 @@ export default function FloatingChatbot() {
             <div className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-[80vw] h-[50vh] bg-blue-500/10 dark:bg-[#1a365d]/40 rounded-[100%] blur-[100px] pointer-events-none"></div>
               
-              {/* UPDATED HEADING WITH REAL USERNAME */}
               <h2 className="text-[2.2rem] md:text-[3rem] font-medium text-gray-800 dark:text-[#e3e3e3] mb-8 relative z-10 text-center leading-tight">
-                  Hello, {username ? username : 'there'}
-                
+                Hello, {username ? username : 'there'}
               </h2>      
               <div className="w-full max-w-3xl relative z-10">
                 {renderInputForm()}

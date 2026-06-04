@@ -12,7 +12,6 @@ import Profile from './components/Profile';
 import { ThemeProvider } from './context/ThemeContext';
 import MobileNavbar from './components/MobileNavbar';
 import Search from './components/Search';
-import FloatingChatbot from './components/FloatingChatbot';
 import SplashScreen from './components/SplashScreen'; 
 
 // --- Reusable Animation Wrapper ---
@@ -47,7 +46,6 @@ function GlobalChatbotWrapper({ isLoggedIn }) {
     return null;
   }
   
-  return <FloatingChatbot />;
 }
 
 // --- Separated Routes Component ---
